@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Navigation component</title>
+</head>
+<body>
+
+<div th:fragment="navigation">
+    <ul class="nav flex-column">
+
+        <li class="nav-item">
+            <a class="nav-link text-white" th:href="@{/bookMyBus/busOperatorPortal/bookedSeats}">
+                booked seat details
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-white" th:href="@{/bookMyBus/busOperatorPortal/{id}/update(id=${busOperator.id})}" >
+                Update busOperator details
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-white" th:href="@{/bookMyBus/busOperatorPortal/{id}/seatSetup(id=${busOperator.id})}" >
+                Add busSeat details
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-white" th:href="@{/bookMyBus/busOperatorPortal/{id}/routeSetup(id=${busOperator.id})}" >
+                Add BusRoute details
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-white" th:href="@{/bookMyBus/busOperatorPortal/{id}/stopsSetup(id=${busOperator.id})}" >
+                Add BusStops details
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link text-white" th:href="@{/bookMyBus}">
+                Logout
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+</body>
+</html>

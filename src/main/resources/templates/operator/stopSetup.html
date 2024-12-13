@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" th:href="@{/bookMyBusIcon.png}">
+    <title>Bus Operator</title>
+    <link rel="stylesheet" th:href="@{/bootstrap/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/portalTemplate.css}">
+    <link rel="stylesheet" th:href="@{/css/addPassengerSuccess.css}">
+    <style>
+        /* Table styling */
+        table {
+            width: 100%;
+            border-collapse: collapse; /* Makes the table borders collapse into one */
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            text-align: center;
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #555;
+        }
+
+        /* Button and margin for spacing */
+        .button-wrapper {
+            margin-top: 20px;
+        }
+
+    .form-control {
+        border: none;
+        box-shadow: none; /* Remove the focus outline shadow */
+    }
+
+    /* Optional: Add subtle focus styles for better accessibility */
+    .form-control:focus {
+        outline: none;
+    }
+
+    @media (max-width: 576px) {
+        .responsive-table {
+            width: 200px;
+        }
+    }
+
+    @media (min-width: 576px) and (max-width: 992px) {
+        .responsive-table {
+            width: 400px;
+        }
+    }
+
+    @media (min-width: 992px) {
+        .responsive-table {
+            width: 700px;
+        }
+    }
+    </style>
+</head>
+<body>
+<div class="wrapper">
+    <div class="content-wrapper">
+        <!-- Sidebar -->
+        <nav class="col-md-3 col-lg-2 d-md-block bg-secondary text-white sidebar sidebar-sticky">
+            <div class="position-sticky pt-3">
+                <h3 class="text-white">Add bus stops</h3>
+                <div class="navigation" th:replace="~{utility/operatorNavigation :: navigation}"></div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="pt-3 pb-2 mb-3 border-bottom">
+                <h4 class="text-start mb-2" th:text="${mode == 'add' ? 'Add Bus Stop Details' : mode == 'update' ? 'Update Bus Stop Details' : 'Bus Stop Details'}">Bus Details</h4>
+
+                <div class="innerContainer">
+                    <form th:action="@{/bookMyBus/busOperatorPortal/{id}/stopsSetup(id=${busOperator.id})}" method="post" th:object="${stopSetupForm}" id="stopForm">
+                        <div id="stops-container" >
+                            <!-- Table for bus stops -->
+                            <table class="table table-bordered responsive-table">
+                                <thead>
+                                <tr>
+                                    <th >S.N</th>
+                                    <th >Stop Name</th>
+                                    <th >Arrival Time</th>
+                                    <th >Departure Time</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <!-- Placeholder row for new stop -->
+                                <tr th:each="stop, indexStat : ${stopSetupForm.stopDtos}">
+                                    <td  th:text="${indexStat.index + 1}">
+
+                                    </td> <!-- Serial number based on index -->
+                                    <td>
+                                        <input class="form-control" type="text" th:field="*{stopDtos[__${indexStat.index}__].stopName}" placeholder="Enter Stop Name" required />
+                                    </td>
+                                    <td>
+                                        <input class="form-control" type="time" th:field="*{stopDtos[__${indexStat.index}__].arrivesAt}" required />
+                                    </td>
+                                    <td>
+                                        <input class="form-control" type="time" th:field="*{stopDtos[__${indexStat.index}__].leavesAt}" required />
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Button to add more rows dynamically -->
+                        <div class="button-wrapper">
+                            <button type="button" class="btn btn-secondary mb-3" onclick="addStopRow()">Add Stop</button>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="btn btn-secondary">Save Stops</button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-secondary text-white">
+        <hr />
+        <div th:replace="~{utility/footer :: footer}"></div>
+    </footer>
+</div>
+
+<script>
+    let stopIndex = 1;
+
+    function addStopRow() {
+        const tableBody = document.querySelector('table tbody');
+        const newRow = document.createElement('tr');
+        newRow.innerHTML = `
+            <td>${stopIndex + 1}</td> <!-- Serial number for new row -->
+            <td>
+                <input class="form-control" type="text" name="stopDtos[${stopIndex}].stopName" placeholder="Enter Stop Name" required />
+            </td>
+            <td>
+                <input class="form-control" type="time" name="stopDtos[${stopIndex}].arrivesAt" required />
+            </td>
+            <td>
+                <input class="form-control" type="time" name="stopDtos[${stopIndex}].leavesAt" required />
+            </td>
+        `;
+        tableBody.appendChild(newRow);
+        stopIndex++;
+    }
+</script>
+
+</body>
+</html>

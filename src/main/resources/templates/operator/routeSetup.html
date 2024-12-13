@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" th:href="@{/bookMyBusIcon.png}">
+    <title>Bus Operator</title>
+    <link rel="stylesheet" th:href="@{/bootstrap/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/portalTemplate.css}">
+    <link rel="stylesheet" th:href="@{/css/addPassengerSuccess.css}">
+    <style>
+        /* General container styling for form sections */
+   .form-section {
+       margin-bottom: 20px;
+       padding: 15px;
+       border: 1px solid #ddd;
+       border-radius: 8px;
+       background-color: white;
+   }
+
+   /* Title styling */
+   .form-section-title {
+       font-weight: bold;
+       font-size: 16px;
+       margin-bottom: 15px;
+       color: #333;
+   }
+
+   /* Labels for alignment */
+   .form-label {
+       display: inline-block;
+       width: 250px; /* Fixed width for label alignment */
+       font-weight: 600;
+       color: #555;
+   }
+
+
+    /* Styling for the radio buttons */
+    .form-check-input {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+        background-color: #e0e0e0; /* Light gray background */
+        border: 1px solid #bbb;   /* Border color for the default state */
+        border-radius: 50%;       /* Circular shape for radio buttons */
+        -webkit-appearance: none; /* Remove default browser styling */
+        appearance: none;         /* Remove default browser styling */
+        outline: none;
+        transition: background-color 0.2s, border-color 0.2s;
+    }
+
+    /* Add hover and focus effect */
+    .form-check-input:hover {
+        border-color: #888; /* Darker border on hover */
+    }
+
+    .form-check-input:checked {
+        background-color: #007bff; /* Blue for selected radio buttons */
+        border-color: #007bff;     /* Border matches selected color */
+    }
+
+   /* Align input fields and labels */
+   .form-check-inline {
+       margin-left: 10px;
+   }
+
+   /* Add spacing between groups */
+   .form-group {
+       margin-bottom: 15px;
+   }
+    </style>
+</head>
+<body>
+<!-- Contents & Footer-->
+<div class="wrapper">
+    <!-- 1. Sidebar and Main content (Contents) -->
+    <div class="content-wrapper">
+        <!-- Sidebar -->
+        <nav class="col-md-3 col-lg-2 d-md-block bg-secondary text-white sidebar sidebar-sticky">
+            <div class="position-sticky pt-3">
+                <h3 class="text-white ">Bus Operator</h3>
+                <div class="navigation" th:replace="~{utility/operatorNavigation :: navigation}"></div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="pt-3 pb-2 mb-3 border-bottom">
+
+                <h4 class="text-start mb-2" th:text="${mode == 'add' ? 'Add Bus Route Details' : mode == 'update' ? 'Update Bus route Details' : 'Bus route Details'}"> Bus route Details</h4>
+
+                <div class="innerContainer">
+                    <form class="form-inline" th:action="@{/bookMyBus/busOperatorPortal/{id}/routeSetup(id=${busOperator.id})}"
+                          th:object="${route}"  id="operatorRouteForm" method="post">
+<!--                        <input type="hidden"  name="busOperatorId" th:value="${busOperator.id}" />-->
+                        <!--        HiddenHttpMethodFilter: This filter looks for a request parameter named _method.
+                                    If it finds it, it overrides the HTTP method of the request with the value of this parameter.
+                        -->
+                        <!-- Bus Route Section -->
+                        <h4 class="form-section-title" > Route Details</h4>
+
+                        <div class="form-section">
+                            <div class="form-section-title">
+<!--                                <div class="row mb-3 " >-->
+<!--                                    <div class="col-md-3 " th:unless="${mode == 'add'}">-->
+<!--                                        <label class="form-label"  >Your Id</label>-->
+<!--                                        <input class="form-control" type="text" th:field="*{id}" id="idInput" aria-label="id"/>-->
+<!--                                        <div    th:if="${#fields.hasErrors('id')}" >-->
+<!--                                            <p class="text-danger fw-normal" th:errors="*{id}"></p>-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+
+                                <div class="row mb-3 ">
+                                    <div class="col-md-3">
+                                        <label class="form-label " >Departure Place </label>
+                                        <input class="form-control"  type="text" th:field="*{departurePlace}" aria-label="departurePlace" />
+                                        <div  th:unless="${mode == 'view'}"  th:if="${#fields.hasErrors('departurePlace')}">
+                                            <p class="text-danger fw-normal" th:errors="*{departurePlace}"></p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 ">
+                                        <label class="form-label ">Destination place </label>
+                                        <input class="form-control" type="text" th:field="*{arrivalPlace}" aria-label="arrivalPlace"/>
+                                        <div  th:unless="${mode == 'view'}"  th:if="${#fields.hasErrors('arrivalPlace')}">
+                                            <p class="text-danger fw-normal"  th:errors="*{arrivalPlace}"></p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3 ">
+                                    <div class="col-md-3">
+                                        <label class="form-label " >Departure Time </label>
+                                        <input class="form-control"  type="time" th:field="*{departureTime}" aria-label="departureTime" placeholder="10:15"/>
+                                        <div  th:unless="${mode == 'view'}"  th:if="${#fields.hasErrors('departureTime')}">
+                                            <p class="text-danger fw-normal" th:errors="*{departureTime}"></p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 ">
+                                        <label class="form-label ">Destination Time </label>
+                                        <input class="form-control" type="time" th:field="*{arrivalTime}" aria-label="arrivalTime" placeholder="5:15" />
+                                        <div  th:unless="${mode == 'view'}"  th:if="${#fields.hasErrors('arrivalTime')}">
+                                            <p class="text-danger fw-normal"  th:errors="*{arrivalTime}"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mb-3 ">
+                                    <div class="col-md-6 col-lg-12">
+                                        <div class="form-group">
+                                            <label class="form-label w-auto">Availability on your selected departure place</label>
+                                            <br>
+                                            <!-- Mon(2),Wed(4),Fri(6) -> considered as even days and vice versa-->
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" th:field="*{isEvenDay}" id="evenYes" value="true">
+                                                <label class="form-check-label fw-medium" style="font-size:13px;" for="evenYes">MON, WED & FRI</label>
+                                            </div>
+
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" th:field="*{isEvenDay}" id="evenNo" value="false">
+                                                <label class="form-check-label fw-medium" style="font-size:13px;"  for="evenNo">SUN, TUE, THU & SAT</label>
+                                            </div>
+
+                                            <div th:if="${#fields.hasErrors('isEvenDay')}">
+                                                <p class="text-danger fw-normal " th:errors="*{isEvenDay}"></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+
+                            </div>
+                        </div>
+
+
+                        <input th:unless="${mode == 'view'}" class="ml-1 btn btn-secondary" type="submit" th:value=" ${mode == 'add' ? 'Add' : 'Update'} + ' Bus Route' ">
+                        <br>
+
+                    </form>
+
+                </div>
+
+
+            </div>
+        </main>
+    </div>
+
+    <!-- 2. Footer -->
+
+    <footer class="bg-secondary text-white">
+        <hr />
+        <div th:replace="~{utility/footer :: footer}"></div>
+    </footer>
+
+</div>
+<!--<script th:src="@{/js/operatorForm.js}"></script>-->
+<script>
+
+</script>
+
+</body>
+</html>

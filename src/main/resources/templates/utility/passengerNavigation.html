@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Navigation component</title>
+</head>
+<body>
+
+<div th:fragment="navigation">
+    <ul class="nav flex-column">
+        <li class="nav-item">
+            <a class="nav-link text-white" th:href="@{/bookMyBus/passengerPortal/{id}/searchBus( id=${passenger.id} ) }">
+                Book bus
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-white" th:href="@{/bookMyBus/passengerPortal/{id}/bookedTickets (id=${ passenger.id}) }">
+                Booked Tickets
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-white" th:href="@{/bookMyBus/passengerPortal/{id}/update(id=${passenger.id})}">
+                Update Profile
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link text-white" th:href="@{/bookMyBus}">
+                Logout
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+</body>
+</html>

@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BookMyBus</title>
+    <link rel="stylesheet" th:href="@{/bootstrap/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/portalTemplate.css}">
+    <style>
+
+        .bus-card {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+            }
+        /* Flex layout for placing lower and upper decks horizontally */
+
+        .seats-container {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            display: flex;
+            gap:20px;
+            }
+        .deck-container {
+            padding:20px;
+            border : 1px solid black;
+            border-radius :10px;
+            display: flex;
+            justify-content: space-between; /* Evenly distribute decks */
+        }
+        .deck-container h6 {
+            text-align: center;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #333;
+        }
+        .deck {
+            display: flex;
+            flex-direction:row;
+            flex: 1;
+            min-width: 120px; /* Set a minimum width to prevent the deck from becoming too narrow */
+            margin: 0 10px; /* Add spacing between decks */
+        }
+
+
+        .seat-row {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+
+        .sleeper-seat {
+            text-align: center;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            width: 30px; height: 50px; border-radius: 5px;
+        }
+
+        .seater-seat {
+            text-align: center;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            width: 30px; height: 30px; border-radius: 5px;
+        }
+
+        .booked {
+            background-color: gray;
+            color: white;
+            cursor: not-allowed;
+            }
+        .available, .empty{
+            border: 1px solid #858585;
+            }
+        .d-none {
+            display: none;
+             }
+
+        /* Media Query for Smaller or Medium Screens */
+        @media (max-width: 768px) {
+            .seats-container {
+                flex-direction: column; /* Stack decks vertically */
+                align-items: center; /* Center decks horizontally */
+            }
+
+            .deck-container {
+                margin-bottom: 20px; /* Add spacing between stacked decks */
+            }
+        }
+    </style>
+
+</head>
+<body>
+
+<div class="wrapper">
+    <div class="content-wrapper">
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="pt-3 pb-2 mb-3 border-bottom">
+                <h4 class="text-start mb-2">BookMyBus</h4>
+
+                <div class="innerContainer">
+                    <h5 class="text-start mb-4">Select Bus</h5>
+
+                    <form class="form-inline" th:action="@{/bookMyBus/passengerPortal/{id}/selectSeats(id=${passenger.id})}" method="post" id="passengerForm">
+                        <div th:each="bus : ${availableBuses}" class="bus-card">
+                            <h5 th:text="${bus.name}" class="text-primary"></h5>
+                            <p>Route: <span th:text="${bus.routes[0].departurePlace}"></span> → <span th:text="${bus.routes[0].arrivalPlace}"></span></p>
+                            <p>Departure: <span th:text="${bus.routes[0].departureTime}"></span></p>
+                            <p>Arrival: <span th:text="${bus.routes[0].arrivalTime}"></span></p>
+
+                            <!-- Show Seats Button -->
+                            <button type="button" class="btn btn-info"
+                                    th:onclick="'showSeats(' + ${bus.id} + ')'" id="showSeatsBtn">
+                                Show Seats
+                            </button>
+
+                            <!-- Seats Container -->
+                            <div th:id="'seats-container-' + ${bus.id}" class="seats-container d-none"></div>
+
+                            <!-- Hidden form inputs for selected seat numbers -->
+                            <div class="d-none">
+                                <input type="hidden" name="selectedSeats" id="selectedSeats">
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="btn btn-primary" onclick="submitForm(event)">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script>
+    let selectedSeats = [];
+
+    // Function to show seats for a given bus
+    function showSeats(busId) {
+        const container = document.getElementById(`seats-container-${busId}`);
+        if (!container) return;
+
+        if (!container.classList.contains("d-none")) {
+            container.classList.add("d-none");
+            return; // Hide if already visible
+        }
+
+        fetch(`/bookMyBus/passengerPortal/${busId}/seatsss`)
+            .then(response => response.json())
+            .then(data => {
+                renderSeats(data, container, busId);
+                container.classList.remove("d-none");
+            })
+            .catch(error => console.error("Error fetching seat data:", error));
+    }
+
+    // Function to render seats
+    function renderSeats(data, container, busId) {
+        container.innerHTML = ""; // Clear previous seats
+
+        // Lower Deck
+        const lowerDeckWrapper = document.createElement('div');
+        lowerDeckWrapper.className = 'deck-wrapper';
+        const lowerDeckHeader = document.createElement('h6');
+        lowerDeckHeader.textContent = "Lower Deck";
+        lowerDeckWrapper.appendChild(lowerDeckHeader);
+
+        const lowerDeckContainer = document.createElement('div');
+        lowerDeckContainer.className = 'deck-container';
+
+        if (data.lowerLeftSeatCountInEachRow && data.lowerLeftTotalRowsCount) {
+            lowerDeckContainer.innerHTML += renderSection(data.seats.lowerLeft, "Lower Deck - Left", data.lowerLeftSeatCountInEachRow, data.lowerLeftTotalRowsCount, busId);
+        }
+        if (data.lowerRightSeatCountInEachRow && data.lowerRightTotalRowsCount) {
+            lowerDeckContainer.innerHTML += renderSection(data.seats.lowerRight, "Lower Deck - Right", data.lowerRightSeatCountInEachRow, data.lowerRightTotalRowsCount, busId);
+        }
+
+        lowerDeckWrapper.appendChild(lowerDeckContainer);
+
+        // Upper Deck
+        const upperDeckWrapper = document.createElement('div');
+        upperDeckWrapper.className = 'deck-wrapper';
+
+        const upperDeckHeader = document.createElement('h6');
+        upperDeckHeader.textContent = "Upper Deck";
+        upperDeckWrapper.appendChild(upperDeckHeader);
+
+        const upperDeckContainer = document.createElement('div');
+        upperDeckContainer.className = 'deck-container';
+
+        if (data.upperLeftSeatCountInEachRow && data.upperTotalRowsCount) {
+            upperDeckContainer.innerHTML += renderSection(data.seats.upperLeft, "Upper Deck - Left", data.upperLeftSeatCountInEachRow, data.upperTotalRowsCount, busId);
+        }
+        if (data.upperRightSeatCountInEachRow && data.upperTotalRowsCount) {
+            upperDeckContainer.innerHTML += renderSection(data.seats.upperRight, "Upper Deck - Right", data.upperRightSeatCountInEachRow, data.upperTotalRowsCount, busId);
+        }
+
+        upperDeckWrapper.appendChild(upperDeckContainer);
+        container.appendChild(lowerDeckWrapper);
+        container.appendChild(upperDeckWrapper);
+    }
+
+    // Function to render a section of seats
+    function renderSection(seats, sectionName, seatsPerRow, totalRows, busId) {
+        let html = `<div class="deck"><div class="seat-grid">`;
+        for (let row = 0; row < totalRows; row++) {
+            html += `<div class="seat-row">`;
+            for (let col = 0; col < seatsPerRow; col++) {
+                const seatIndex = row * seatsPerRow + col;
+                if (seatIndex < seats.length) {
+                    const seat = seats[seatIndex];
+                    html += renderSeat(seat, busId);
+                } else {
+                    html += `<div class="seat empty"></div>`;
+                }
+            }
+            html += `</div>`;
+        }
+        html += `</div></div>`;
+        return html;
+    }
+
+    // Function to render a single seat with a click handler for selection
+    function renderSeat(seat, busId) {
+        let seatTypeClass = seat.seatType === "sleeper" ? "sleeper-seat" : "seater-seat";
+        const seatClass = seat.isBooked ? "booked" : "available";
+
+        // Seat div with click event for selection
+        const seatElement = `<div class="${seatClass} ${seatTypeClass}" data-seat-id="${seat.id}" data-seat-number="${seat.seatNumber}" onclick="selectSeat(this, ${busId})">${seat.seatNumber}</div>`;
+
+        return seatElement;
+    }
+
+    // Function to handle seat selection
+    function selectSeat(seatElement, busId) {
+        if (seatElement.classList.contains("booked")) return; // Don't allow selection of booked seats
+
+        const seatId = seatElement.dataset.seatId;
+        const seatNumber = seatElement.dataset.seatNumber;
+
+        // Toggle selection
+        if (selectedSeats.includes(seatId)) {
+            selectedSeats = selectedSeats.filter(id => id !== seatId); // Remove seat from selection
+            seatElement.style.backgroundColor = ''; // Reset style
+        } else {
+            if (selectedSeats.length < 4) {
+                selectedSeats.push(seatId); // Add seat to selection
+                seatElement.style.backgroundColor = '#f39c12'; // Highlight selected seat
+            } else {
+                alert('You can select up to 4 seats only');
+                return;
+            }
+        }
+
+        // Update hidden input field with selected seats
+        document.getElementById('selectedSeats').value = selectedSeats.join(',');
+    }
+
+    // Submit the form and log selected seat numbers to the console
+    function submitForm(event) {
+        event.preventDefault(); // Prevent form submission to handle manually
+
+        // Log selected seats
+        console.log('Selected Seat Numbers:', selectedSeats);
+
+        // Ensure that the selected seat numbers are passed to the form
+        const selectedSeatsInput = document.getElementById('selectedSeats');
+        selectedSeatsInput.value = selectedSeats.join(',');
+
+        // Now submit the form
+        document.getElementById('passengerForm').submit();
+    }
+</script>
+
+</body>
+</html>

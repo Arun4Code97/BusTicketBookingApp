@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" th:href="@{/passenger_fevicon.png}">
+    <title>Bus Operator</title>
+    <link rel="stylesheet" th:href="@{/bootstrap/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/portalTemplate.css}">
+    <link rel="stylesheet" th:href="@{/css/addPassengerSuccess.css}">
+    <style>
+        /* General container styling for form sections */
+   .form-section {
+       margin-bottom: 20px;
+       padding: 15px;
+       border: 1px solid #ddd;
+       border-radius: 8px;
+       background-color: white;
+   }
+
+   /* Title styling */
+   .form-section-title {
+       font-weight: bold;
+       font-size: 16px;
+       margin-bottom: 15px;
+       color: #333;
+   }
+
+   /* Labels for alignment */
+   .form-label {
+       display: inline-block;
+       width: 250px; /* Fixed width for label alignment */
+       font-weight: 600;
+       color: #555;
+   }
+
+
+    /* Styling for the radio buttons */
+    .form-check-input {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+        background-color: #e0e0e0; /* Light gray background */
+        border: 1px solid #bbb;   /* Border color for the default state */
+        border-radius: 50%;       /* Circular shape for radio buttons */
+        -webkit-appearance: none; /* Remove default browser styling */
+        appearance: none;         /* Remove default browser styling */
+        outline: none;
+        transition: background-color 0.2s, border-color 0.2s;
+    }
+
+    /* Add hover and focus effect */
+    .form-check-input:hover {
+        border-color: #888; /* Darker border on hover */
+    }
+
+    .form-check-input:checked {
+        background-color: #007bff; /* Blue for selected radio buttons */
+        border-color: #007bff;     /* Border matches selected color */
+    }
+
+   /* Align input fields and labels */
+   .form-check-inline {
+       margin-left: 10px;
+   }
+
+   /* Add spacing between groups */
+   .form-group {
+       margin-bottom: 15px;
+   }
+    </style>
+</head>
+<body>
+<!-- Contents & Footer-->
+<div class="wrapper">
+    <!-- 1. Sidebar and Main content (Contents) -->
+    <div class="content-wrapper">
+        <!-- Sidebar -->
+        <nav class="col-md-3 col-lg-2 d-md-block bg-secondary text-white sidebar sidebar-sticky">
+            <div class="position-sticky pt-3">
+                <h3 class="text-white ">Bus Operator</h3>
+
+                <div class="row mb-3 " th:if="${mode == 'add'}">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link text-white" th:href="@{/bookMyBus}">
+                                Cancel
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="row mb-3 " th:if="${mode == 'update'}">
+                    <div class="navigation" th:replace="~{utility/navigation :: navigation}"></div>
+                </div>
+
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="pt-3 pb-2 mb-3 border-bottom">
+
+                <h4 class="text-start mb-2" th:text="${mode == 'add' ? 'Register Bus Operator Details' : mode == 'update' ? 'Update Bus Operator Details' : 'Bus Operator Details'}"> Bus Operator Details</h4>
+
+                <div class="innerContainer">
+                    <form class="form-inline"
+                          th:object="${busOperator}"  id="operatorForm">
+                        <input type="hidden" id="modeHiddenInput" th:value="${mode}" />
+                        <input type="hidden"  th:if="${mode == 'update'}" name="_method" value="put"/>
+                        <!--        HiddenHttpMethodFilter: This filter looks for a request parameter named _method.
+                                    If it finds it, it overrides the HTTP method of the request with the value of this parameter.
+                        -->
+                        <!-- Bus Owner Section -->
+                        <div class="form-section">
+                            <div class="form-section-title"> Bus Basic details
+                                <div class="row mb-3 " >
+                                    <div class="col-md-3 " th:unless="${mode == 'add'}">
+                                        <label class="form-label"  >Your Id</label>
+                                        <input class="form-control" type="text" th:field="*{id}" id="idInput" aria-label="id"/>
+                                        <div    th:if="${#fields.hasErrors('id')}" >
+                                            <p class="text-danger fw-normal" th:errors="*{id}"></p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3 ">
+                                    <div class="col-md-3">
+                                        <label class="form-label " >Register Number </label>
+                                        <input class="form-control"  type="text" th:field="*{registerNumber}" aria-label="registeredNumber" placeholder="TN09AB9007 "/>
+                                        <div  th:unless="${mode == 'view'}"  th:if="${#fields.hasErrors('registerNumber')}">
+                                            <p class="text-danger fw-normal" th:errors="*{registerNumber}"></p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 ">
+                                        <label class="form-label ">Bus Name  </label>
+                                        <input class="form-control" type="text" th:field="*{name}" aria-label="name"/>
+                                        <div  th:unless="${mode == 'view'}"  th:if="${#fields.hasErrors('name')}">
+                                            <p class="text-danger fw-normal"  th:errors="*{name}"></p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-3">
+                                        <label class="form-label " >Operator Mobile Number</label>
+                                        <input class="form-control" type="text" th:field="*{mobile}" aria-label="age"/>
+                                        <div  th:unless="${mode == 'view'}"  th:if="${#fields.hasErrors('mobile')}">
+                                            <p class="text-danger fw-normal"  th:errors="*{mobile}"></p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label " >Email </label>
+                                        <input class="form-control" type="text" th:field="*{email}" aria-label="gender"/>
+                                        <div  th:unless="${mode == 'view'}"  th:if="${#fields.hasErrors('email')}">
+                                            <p class="text-danger fw-normal" th:errors="*{email}"></p>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <label class="form-label " >Driver Mobile Number</label>
+                                        <input class="form-control" type="text" th:field="*{driverMobile}" aria-label="age"/>
+                                        <div  th:unless="${mode == 'view'}"  th:if="${#fields.hasErrors('driverMobile')}">
+                                            <p class="text-danger fw-normal" th:errors="*{driverMobile}"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bus Features Section -->
+                        <div class="form-section">
+                            <div class="form-section-title">Bus Features</div>
+
+                            <!-- Air Conditioner -->
+                            <div class="form-group">
+                                <label class="form-label">Air Conditioner</label>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" th:field="*{hasAirConditioner}" id="hasAirConditionerYes" value="true">
+                                    <label class="form-check-label" for="hasAirConditionerYes">Yes</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" th:field="*{hasAirConditioner}" id="hasAirConditionerNo" value="false">
+                                    <label class="form-check-label" for="hasAirConditionerNo">No</label>
+                                </div>
+                                <div th:if="${#fields.hasErrors('hasAirConditioner')}">
+                                    <p class="text-danger" th:errors="*{hasAirConditioner}"></p>
+                                </div>
+
+                            </div>
+
+                            <!-- WiFi -->
+                            <div class="form-group">
+                                <label class="form-label">WiFi</label>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" th:field="*{hasWifi}" id="hasWifiYes" value="true">
+                                    <label class="form-check-label" for="hasWifiYes">Yes</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" th:field="*{hasWifi}" id="hasWifiNo" value="false">
+                                    <label class="form-check-label" for="hasWifiNo">No</label>
+                                </div>
+                                <div th:if="${#fields.hasErrors('hasWifi')}">
+                                    <p class="text-danger" th:errors="*{hasWifi}"></p>
+                                </div>
+                            </div>
+
+                            <!-- Toilet in Bus -->
+                            <div class="form-group">
+                                <label class="form-label">Toilet in Bus</label>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" th:field="*{hasToiletInBus}" id="hasToiletInBusYes" value="true">
+                                    <label class="form-check-label" for="hasToiletInBusYes">Yes</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" th:field="*{hasToiletInBus}" id="hasToiletInBusNo" value="false">
+                                    <label class="form-check-label" for="hasToiletInBusNo">No</label>
+                                </div>
+                                <div th:if="${#fields.hasErrors('hasToiletInBus')}">
+                                    <p class="text-danger" th:errors="*{hasToiletInBus}"></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bus Seat configuration and deck details Section -->
+                        <div class="form-section">
+                            <div class="form-section-title">Bus seat details</div>
+
+                            <!-- Has Upper Deck -->
+                            <div class="form-group">
+
+                                <label class="form-label">Has UpperDeck </label>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" th:field="*{hasUpperDeck}" id="hasUpperDeckYes" value="true">
+                                    <label class="form-check-label" for="hasUpperDeckYes">Yes</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" th:field="*{hasUpperDeck}" id="hasUpperDeckNo" value="false">
+                                    <label class="form-check-label" for="hasUpperDeckNo">No</label>
+                                </div>
+                                <div th:if="${#fields.hasErrors('hasUpperDeck')}">
+                                    <p class="text-danger" th:errors="*{hasUpperDeck}"></p>
+                                </div>
+                            </div>
+
+                            <!-- Has Lower Deck -->
+                            <div class="form-group">
+                                <label class="form-label">Has Standard Seaters </label>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" th:field="*{hasStandardSeater}" id="hasStandardSeaterYes" value="true">
+                                    <label class="form-check-label" for="hasStandardSeaterYes">Yes</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" th:field="*{hasStandardSeater}" id="hasStandardSeaterNo" value="false">
+                                    <label class="form-check-label" for="hasStandardSeaterNo">No</label>
+                                </div>
+                                <div th:if="${#fields.hasErrors('hasUpperDeck')}">
+                                    <p class="text-danger" th:errors="*{hasUpperDeck}"></p>
+                                </div>
+                            </div>
+
+                            <!-- Has Semi Sleeper -->
+                            <div class="form-group">
+                                <label class="form-label">Has Semi Sleeper</label>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" th:field="*{hasSemiSleeper}" id="hasSemiSleeperYes" value="true">
+                                    <label class="form-check-label" for="hasSemiSleeperYes">Yes</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" th:field="*{hasSemiSleeper}" id="hasSemiSleeperNo" value="false">
+                                    <label class="form-check-label" for="hasSemiSleeperNo">No</label>
+                                </div>
+                                <div th:if="${#fields.hasErrors('hasUpperDeck')}">
+                                    <p class="text-danger" th:errors="*{hasUpperDeck}"></p>
+                                </div>
+                            </div>
+
+                            <!-- Has Sleeper -->
+                            <div class="form-group">
+                                <label class="form-label">Has Sleeper</label>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" th:field="*{hasSleeper}" id="hasSleeperYes" value="true">
+                                    <label class="form-check-label" for="hasSleeperYes">Yes</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" th:field="*{hasSemiSleeper}" id="hasSleeperNo" value="false">
+                                    <label class="form-check-label" for="hasSleeperNo">No</label>
+                                </div>
+                                <div th:if="${#fields.hasErrors('hasUpperDeck')}">
+                                    <p class="text-danger" th:errors="*{hasUpperDeck}"></p>
+                                </div>
+                            </div>
+
+                            <!-- Total seat counts -->
+                            <div class="row mb-3 align-items-center">
+                                <div class="col-md-6">
+                                    <label class="form-label me-2" >Total Seats Count</label>
+                                    <input class="form-control d-inline-block w-auto"  type="text" th:field="*{totalSeatsCount}" aria-label="totalSeatsCount" placeholder="40"/>
+                                    <div  th:unless="${mode == 'view'}"  th:if="${#fields.hasErrors('totalSeatsCount')}">
+                                        <p class="text-danger fw-normal" th:errors="*{totalSeatsCount}"></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- Bus Seat configuration and deck details Section -->
+                        <div class="form-section">
+                            <div class="form-section-title">Bus Deck details</div>
+                            <!-- Lower deck  -->
+                            <!-- Lower Single Seater Type -->
+                            <div class="form-group">
+                                <div class="form-section-title">Lower Deck</div>
+                                <div class="form-section-title">Single Seater</div>
+                                <label class="form-label">Seater Type </label>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" th:field="*{lowerSingleSeaterType}" id="lowerSingleSeaterTypeStandardSeat" value="true">
+                                    <label class="form-check-label" for="lowerSingleSeaterTypeStandardSeat">Standard seater</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" th:field="*{lowerSingleSeaterType}" id="lowerSingleSeaterTypeSemiSleeperSeat" value="false">
+                                    <label class="form-check-label" for="lowerSingleSeaterTypeSemiSleeperSeat">Semi Sleeper</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" th:field="*{lowerSingleSeaterType}" id="lowerSingleSeaterTypeSleeperSeat" value="false">
+                                    <label class="form-check-label" for="lowerSingleSeaterTypeSleeperSeat">Sleeper</label>
+                                </div>
+                                <div th:if="${#fields.hasErrors('lowerSingleSeaterType')}">
+                                    <p class="text-danger" th:errors="*{lowerSingleSeaterType}"></p>
+                                </div>
+                            </div>
+
+                            <!-- Lower Single Seater Counts -->
+                            <div class="row mb-3 align-items-center">
+                                <div class="col-md-6">
+                                    <label class="form-label me-2" >Lower Single Seater Counts</label>
+                                    <input class="form-control d-inline-block w-auto"  type="text" th:field="*{lowerSingleSeaterCounts}" aria-label="totalSeatsCount" placeholder="40"/>
+                                    <div  th:unless="${mode == 'view'}"  th:if="${#fields.hasErrors('lowerSingleSeaterCounts')}">
+                                        <p class="text-danger fw-normal" th:errors="*{lowerSingleSeaterCounts}"></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Lower Double Seater Type -->
+                            <div class="form-group">
+                                <div class="form-section-title">Double Seater</div>
+                                <label class="form-label">Seat Type </label>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" th:field="*{lowerDoubleSeaterType}" id="lowerDoubleSeaterTypeSeat" value="true">
+                                    <label class="form-check-label" for="lowerDoubleSeaterTypeSeat">Standard seater</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" th:field="*{lowerDoubleSeaterType}" id="lowerDoubleSeaterTypeSemiSleeperSeat" value="false">
+                                    <label class="form-check-label" for="lowerDoubleSeaterTypeSemiSleeperSeat">Semi Sleeper</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" th:field="*{lowerDoubleSeaterType}" id="lowerDoubleSeaterTypeSleeperSeat" value="false">
+                                    <label class="form-check-label" for="lowerDoubleSeaterTypeSleeperSeat">Sleeper</label>
+                                </div>
+                                <div th:if="${#fields.hasErrors('lowerDoubleSeaterType')}">
+                                    <p class="text-danger" th:errors="*{lowerDoubleSeaterType}"></p>
+                                </div>
+                            </div>
+
+                            <!-- Lower Double Seater Counts -->
+                            <div class="row mb-3 align-items-center">
+                                <div class="col-md-6">
+                                    <label class="form-label me-2" >Seat Counts</label>
+                                    <input class="form-control d-inline-block w-auto"  type="text" th:field="*{lowerDoubleSeaterCounts}" aria-label="totalSeatsCount" placeholder="40"/>
+                                    <div  th:unless="${mode == 'view'}"  th:if="${#fields.hasErrors('lowerDoubleSeaterCounts')}">
+                                        <p class="text-danger fw-normal" th:errors="*{lowerDoubleSeaterCounts}"></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr/>
+                            <!-- Upper deck  -->
+                            <!-- Upper Single Seater Type -->
+                            <div class="form-group">
+                                <div class="form-section-title">Upper Deck</div>
+                                <div class="form-section-title">Single Seater</div>
+                                <label class="form-label">Seat Type </label>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" th:field="*{upperSingleSeaterType}" id="upperSingleSeaterTypeStandardSeat" value="true">
+                                    <label class="form-check-label" for="upperSingleSeaterTypeStandardSeat">Standard seater</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" th:field="*{upperSingleSeaterType}" id="upperSingleSeaterTypeSemiSleeperSeat" value="false">
+                                    <label class="form-check-label" for="upperSingleSeaterTypeSemiSleeperSeat">Semi Sleeper</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" th:field="*{upperSingleSeaterType}" id="upperSingleSeaterTypeSleeperSeat" value="false">
+                                    <label class="form-check-label" for="upperSingleSeaterTypeSleeperSeat">Sleeper</label>
+                                </div>
+                                <div th:if="${#fields.hasErrors('upperSingleSeaterType')}">
+                                    <p class="text-danger" th:errors="*{upperSingleSeaterType}"></p>
+                                </div>
+                            </div>
+
+                            <!-- Upper Single Seater Counts -->
+                            <div class="row mb-3 align-items-center">
+                                <div class="col-md-6">
+                                    <label class="form-label me-2" >Seat Counts</label>
+                                    <input class="form-control d-inline-block w-auto"  type="text" th:field="*{upperSingleSeaterCounts}" aria-label="totalSeatsCount" placeholder="40"/>
+                                    <div  th:unless="${mode == 'view'}"  th:if="${#fields.hasErrors('upperSingleSeaterCounts')}">
+                                        <p class="text-danger fw-normal" th:errors="*{upperSingleSeaterCounts}"></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Upper Double Seater Type -->
+                            <div class="form-group">
+                                <div class="form-section-title">Double Seater</div>
+                                <label class="form-label">Seat Type </label>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" th:field="*{upperDoubleSeaterType}" id="upperDoubleSeaterTypeSeat" value="true">
+                                    <label class="form-check-label" for="upperDoubleSeaterTypeSeat">Standard seater</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" th:field="*{upperDoubleSeaterType}" id="upperDoubleSeaterTypeSemiSleeperSeat" value="false">
+                                    <label class="form-check-label" for="upperDoubleSeaterTypeSemiSleeperSeat">Semi Sleeper</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" th:field="*{upperDoubleSeaterType}" id="upperDoubleSeaterTypeSleeperSeat" value="false">
+                                    <label class="form-check-label" for="upperDoubleSeaterTypeSleeperSeat">Sleeper</label>
+                                </div>
+                                <div th:if="${#fields.hasErrors('upperDoubleSeaterType')}">
+                                    <p class="text-danger" th:errors="*{'upperDoubleSeaterType}"></p>
+                                </div>
+                            </div>
+
+                            <!-- Upper Double Seater Counts -->
+                            <div class="row mb-3 align-items-center">
+                                <div class="col-md-6">
+                                    <label class="form-label me-2" >Seat Counts</label>
+                                    <input class="form-control d-inline-block w-auto"  type="text" th:field="*{upperDoubleSeaterCounts}" aria-label="totalSeatsCount" placeholder="40"/>
+                                    <div  th:unless="${mode == 'view'}"  th:if="${#fields.hasErrors('upperDoubleSeaterCounts')}">
+                                        <p class="text-danger fw-normal" th:errors="*{upperDoubleSeaterCounts}"></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+
+                        <div class="row mb-3" th:if="${mode == 'update'}" >
+                            <div class="col-md-3"  >
+                                <label class="form-label fw-bold">Update password here </label>
+                                <input class="form-control" type="text" th:field="*{password}" aria-label="password"/>
+                                <div   th:if="${#fields.hasErrors('password')}">
+                                    <p class="text-danger fw-normal" th:errors="*{password}"></p>
+                                </div> <br>
+                            </div>
+                        </div>
+
+                        <input th:unless="${mode == 'view'}" class="ml-1 btn btn-secondary" type="submit" th:value=" ${mode == 'add' ? 'Add' : 'Update'} + ' Bus Operator' ">
+                        <br>
+
+                    </form>
+
+                </div>
+
+                <!--            To trigger alter when successful profile update-->
+                <div  th:if="${updateSuccess}">
+                    <input type="hidden" id="hiddenPassengerId" th:value="${busOperator.id}" />
+                    <div id="notificationBox" class="alert alert-success">
+                        <strong>Success!</strong> Your details are updated successfully.
+                        Redirecting to busOperator booking page...
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- 2. Footer -->
+
+    <footer class="bg-secondary text-white">
+        <hr />
+        <div th:replace="~{utility/footer :: footer}"></div>
+    </footer>
+
+</div>
+<script th:src="@{/js/operatorForm.js}"></script>
+
+</body>
+</html>

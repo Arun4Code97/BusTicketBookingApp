@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" th:href="@{/passenger_fevicon.png}">
+    <title>Passenger</title>
+    <link rel="stylesheet" th:href="@{/bootstrap/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/portalTemplate.css}">
+    <link rel="stylesheet" th:href="@{/css/addPassengerSuccess.css}">
+</head>
+<body>
+<!-- Contents & Footer-->
+    <div class="wrapper">
+        <!-- 1. Sidebar and Main content (Contents) -->
+        <div class="content-wrapper">
+            <!-- Sidebar -->
+            <nav class="col-md-3 col-lg-2 d-md-block bg-secondary text-white sidebar sidebar-sticky">
+                <div class="position-sticky pt-3">
+                    <h3 class="text-white ">Passenger</h3>
+
+                        <div class="row mb-3 " th:if="${mode == 'add'}">
+                            <ul class="nav flex-column">
+                                <li class="nav-item">
+                                    <a class="nav-link text-white" th:href="@{/bookMyBus}">
+                                    Cancel
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="row mb-3 " th:if="${mode == 'update'}">
+                            <div class="navigation" th:replace="~{utility/passengerNavigation :: navigation}"></div>
+                        </div>
+
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="pt-3 pb-2 mb-3 border-bottom">
+
+                    <h4 class="text-start mb-2" th:text="${mode == 'add' ? 'Register Passenger Details' : mode == 'update' ? 'Update Passenger Details' : 'Passenger Details'}"> Passenger Details</h4>
+
+                    <div class="innerContainer">
+                        <form class="form-inline"
+                              th:object="${passenger}"  id="passengerForm">
+                            <input type="hidden" id="modeHiddenInput" th:value="${mode}" />
+                            <input type="hidden"  th:if="${mode == 'update'}" name="_method" value="put"/>
+                            <!--        HiddenHttpMethodFilter: This filter looks for a request parameter named _method.
+                                        If it finds it, it overrides the HTTP method of the request with the value of this parameter.
+                            -->
+                            <div class="row mb-3 " >
+                                <div class="col-md-3 " th:unless="${mode == 'add'}">
+                                    <label class="form-label"  >Your Id</label>
+                                    <input class="form-control" type="text" th:field="*{id}" id="idInput" aria-label="id"/>
+                                    <div    th:if="${#fields.hasErrors('id')}" >
+                                        <p class="text-danger" th:errors="*{id}"></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3 ">
+                                <div class="col-md-3">
+                                    <label class="form-label " >First Name </label>
+                                    <input class="form-control"  type="text" th:field="*{firstName}" aria-label="firstName"/>
+                                    <div  th:unless="${mode == 'view'}"  th:if="${#fields.hasErrors('firstName')}">
+                                        <p class="text-danger" th:errors="*{firstName}"></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 ">
+                                    <label class="form-label ">Last Name  </label>
+                                    <input class="form-control" type="text" th:field="*{lastName}" aria-label="lastName"/>
+                                    <div  th:unless="${mode == 'view'}"  th:if="${#fields.hasErrors('lastName')}">
+                                        <p class="text-danger" th:errors="*{lastName}"></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-3">
+                                    <label class="form-label " >Age </label>
+                                    <input class="form-control" type="text" th:field="*{age}" aria-label="age"/>
+                                    <div  th:unless="${mode == 'view'}"  th:if="${#fields.hasErrors('age')}">
+                                        <p class="text-danger" th:errors="*{age}"></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label " >Gender </label>
+                                    <input class="form-control" type="text" th:field="*{gender}" aria-label="gender"/>
+                                    <div  th:unless="${mode == 'view'}"  th:if="${#fields.hasErrors('gender')}">
+                                        <p class="text-danger" th:errors="*{gender}"></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-3">
+                                    <label class="form-label " >Email </label>
+                                    <input class="form-control " type="text" th:field="*{email}" aria-label="email"/>
+                                    <div   th:unless="${mode == 'view'}" th:if="${#fields.hasErrors('email')}">
+                                        <p class="text-danger" th:errors="*{email}"></p>
+                                    </div>
+                                    <div   th:if="${errorExistEmail}">
+                                        <p class="text-danger" th:text="${errorExistEmail}"> </p>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label ">Primary Mobile </label>
+                                    <input class="form-control" type="text" th:field="*{primaryMobile}" aria-label="primaryMobile"/>
+                                    <div  th:unless="${mode == 'view'}"  th:if="${#fields.hasErrors('primaryMobile')}">
+                                        <p class="text-danger" th:errors="*{primaryMobile}"></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label ">Secondary Mobile </label>
+                                    <input class="form-control" type="text" th:field="*{secondaryMobile}" aria-label="primaryMobile"/>
+                                    <div  th:unless="${mode == 'view'}"  th:if="${#fields.hasErrors('secondaryMobile')}">
+                                        <p class="text-danger" th:errors="*{secondaryMobile}"></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-3">
+                                    <label class="form-label " >City </label>
+                                    <input class="form-control" type="text" th:field="*{city}" aria-label="city"/>
+                                    <div   th:unless="${mode == 'view'}" th:if="${#fields.hasErrors('city')}">
+                                        <p class="text-danger" th:errors="*{city}"></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-5">
+                                    <label class="form-label " >Address </label>
+                                    <textarea  class="form-control" th:field="*{address}" aria-label="address" rows="3"></textarea>
+                                    <div   th:unless="${mode == 'view'}" th:if="${#fields.hasErrors('address')}">
+                                        <p class="text-danger" th:errors="*{address}"></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3" th:if="${mode == 'update'}" >
+                                <div class="col-md-3"  >
+                                    <label class="form-label fw-bold">Update password here </label>
+                                    <input class="form-control" type="text" th:field="*{password}" aria-label="password"/>
+                                    <div   th:if="${#fields.hasErrors('password')}">
+                                        <p class="text-danger" th:errors="*{password}"></p>
+                                    </div> <br>
+                                </div>
+                            </div>
+
+                            <input th:unless="${mode == 'view'}" class="ml-1 btn btn-secondary" type="submit" th:value=" ${mode == 'add' ? 'Add' : 'Update'} + ' passenger' ">
+                            <br>
+
+                        </form>
+
+                    </div>
+
+                    <!--            To trigger alter when successful profile update-->
+                    <div  th:if="${updateSuccess}">
+                        <input type="hidden" id="hiddenPassengerId" th:value="${passenger.id}" />
+                        <div id="notificationBox" class="alert alert-success">
+                            <strong>Success!</strong> Your details are updated successfully.
+                            Redirecting to passenger portal bus booking page...
+                        </div>
+                    </div>
+
+                </div>
+            </main>
+        </div>
+
+        <!-- 2. Footer -->
+
+        <footer class="bg-secondary text-white">
+            <hr />
+            <div th:replace="~{utility/footer :: footer}"></div>
+        </footer>
+
+    </div>
+    <script th:src="@{/js/passengerForm.js}"></script>
+
+</body>
+</html>

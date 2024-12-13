@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" th:href="@{/passenger_fevicon.png}">
+    <title>BookMyBus</title>
+    <link rel="stylesheet" th:href="@{/bootstrap/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/portalTemplate.css}">
+    <style>
+
+    </style>
+
+</head>
+<body>
+<!-- Contents & Footer-->
+<div class="wrapper">
+    <!-- 1. Sidebar and Main content (Contents) -->
+    <div class="content-wrapper">
+        <!-- Sidebar -->
+        <nav class="col-md-3 col-lg-2 d-md-block bg-secondary text-white sidebar sidebar-sticky">
+            <div class="position-sticky pt-3">
+                <h3 class="text-white ">Passenger</h3>
+                <div class="navigation" th:replace="~{utility/passengerNavigation :: navigation}"></div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="pt-3 pb-2 mb-3 border-bottom">
+
+                <h4 class="text-start mb-2 ">BookMyBus </h4>
+
+                <div class="innerContainer">
+                    <h5 class="text-start mb-2 ">Search Bus </h5>
+                    <form class="form-inline"
+                          th:action="@{/bookMyBus/passengerPortal/{id}/searchBus(id=${passenger.id})}"
+                          th:object="${searchDto}"
+                           method="post" id="passengerForm">
+<!--                        <input type="hidden" id="modeHiddenInput" th:value="${mode}" />-->
+<!--                        <input type="hidden"  th:if="${mode == 'update'}" name="_method" value="put"/>-->
+                        <!--        HiddenHttpMethodFilter: This filter looks for a request parameter named _method.
+                                    If it finds it, it overrides the HTTP method of the request with the value of this parameter.
+                        -->
+                        <div class="row mb-3">
+                            <!-- From -->
+                            <div class="col-md-3">
+                                <label class="form-label">From</label>
+                                <input class="form-control" type="text" th:field="*{fromPlace}" id="fromInput" aria-label="fromPlace" />
+                                <p th:if="${#fields.hasErrors('fromPlace')}" class="text-danger fw-normal" th:errors="*{fromPlace}"></p>
+                            </div>
+
+                            <!-- To -->
+                            <div class="col-md-3">
+                                <label class="form-label">To</label>
+                                <input class="form-control" type="text" th:field="*{toPlace}" id="toInput" aria-label="toPlace" />
+                                <p th:if="${#fields.hasErrors('toPlace')}" class="text-danger fw-normal" th:errors="*{toPlace}"></p>
+                            </div>
+
+                            <!-- Trip Date -->
+                            <div class="col-md-3">
+                                <label class="form-label">Date</label>
+                                <input class="form-control" type="date" th:field="*{tripDate}" id="tripDateInput" aria-label="tripDate" required />
+                                <p th:if="${#fields.hasErrors('tripDate')}" class="text-danger fw-normal" th:errors="*{tripDate}"></p>
+                            </div>
+
+                            <!-- Search Button -->
+                            <div class="col-md-3" >
+                                    <input th:unless="${mode == 'view'}" class="btn btn-secondary mt-2 mt-md-4" style="padding:11px;"  type="submit" th:value="Search">
+                            </div>
+                        </div>
+
+
+                        <br>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 2. Footer -->
+
+    <footer class="bg-secondary text-white">
+        <hr />
+        <div th:replace="~{utility/footer :: footer}"></div>
+    </footer>
+
+</div>
+<!--    <script th:src="@{/js/addPassenger.js}"></script>-->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const dateInput = document.getElementById('tripDateInput');
+        if (!dateInput.value) { // Only set default if there's no value
+            const today = new Date().toISOString().split('T')[0]; // Format as yyyy-MM-dd
+            dateInput.value = today;
+        }
+    });
+</script>
+</body>
+
+</html>
