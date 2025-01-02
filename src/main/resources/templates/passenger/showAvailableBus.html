@@ -7,91 +7,112 @@
     <link rel="stylesheet" th:href="@{/bootstrap/bootstrap.min.css}">
     <link rel="stylesheet" th:href="@{/css/portalTemplate.css}">
     <style>
+              .from-place {
+                  color: blue;
+                  font-style: italic;
+              }
 
-        .bus-card {
-            border: 1px solid #ddd;
-            padding: 15px;
-            margin-bottom: 20px;
-            background-color: #f9f9f9;
-            }
-        /* Flex layout for placing lower and upper decks horizontally */
+              .to-place {
+                  color: blue;
+                  font-style: italic;
+              }
 
-        .seats-container {
-            margin-top: 20px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            background-color: #fff;
-            display: flex;
-            gap:20px;
-            }
-        .deck-container {
-            padding:20px;
-            border : 1px solid black;
-            border-radius :10px;
-            display: flex;
-            justify-content: space-between; /* Evenly distribute decks */
-        }
-        .deck-container h6 {
-            text-align: center;
-            margin-bottom: 10px;
-            font-weight: bold;
-            color: #333;
-        }
-        .deck {
-            display: flex;
-            flex-direction:row;
-            flex: 1;
-            min-width: 120px; /* Set a minimum width to prevent the deck from becoming too narrow */
-            margin: 0 10px; /* Add spacing between decks */
-        }
+              .trip-date {
+                  color: red;
+                  font-style: italic;
+              }
+              .bus-card {
+                  border: 1px solid #ddd;
+                  padding: 15px;
+                  margin-bottom: 20px;
+                  background-color: #f9f9f9;
+                  }
+              /* Flex layout for placing lower and upper decks horizontally */
+
+              .seats-container {
+                  margin-top: 20px;
+                  padding: 10px;
+                  border: 1px solid #ccc;
+                  background-color: #fff;
+                  display: flex;
+                  gap:20px;
+                   min-height:300px;
+                  }
+              .deck-wrapper{
+                      min-height: 250px;
+                      display: flex; /* Use flexbox to align children */
+                      align-items: stretch; /* Stretch children to the full height */
+              }
+              .deck-container {
+                  padding:20px;
+                  border : 1px solid black;
+                  border-radius :10px;
+                  display: flex;
+                  justify-content: space-between; /* Evenly distribute decks */
+              }
+              .deck-wrapper h6 {
+                  text-align: center;
+                  margin-bottom: 10px;
+                  font-weight: bold;
+                  color: #333;
+                  margin-right:10px;
+              }
+              .deck {
+      <!--            border : 1px solid black;-->
+                  display: flex;
+                  flex-direction:row;
+                  flex: 1;
+                  min-width: 100px; /* Set a minimum width to prevent the deck from becoming too narrow */
+                  margin: 0 10px; /* Add spacing between decks */
+              }
 
 
-        .seat-row {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            margin-bottom: 10px;
-        }
+              .seat-row {
+                  display: flex;
+                  gap: 10px;
+                  justify-content: center;
+                  margin-bottom: 10px;
+              }
 
-        .sleeper-seat {
-            text-align: center;
-            border: 1px solid #ccc;
-            cursor: pointer;
-            transition: transform 0.3s ease;
-            width: 30px; height: 50px; border-radius: 5px;
-        }
+              .sleeper-seat {
+                  text-align: center;
+                  border: 1px solid #ccc;
+                  cursor: pointer;
+                  transition: transform 0.3s ease;
+                  width: 30px; height: 50px; border-radius: 5px;
+              }
 
-        .seater-seat {
-            text-align: center;
-            border: 1px solid #ccc;
-            cursor: pointer;
-            transition: transform 0.3s ease;
-            width: 30px; height: 30px; border-radius: 5px;
-        }
+              .seater-seat {
+                  text-align: center;
+                  border: 1px solid #ccc;
+                  cursor: pointer;
+                  transition: transform 0.3s ease;
+                  width: 30px; height: 30px; border-radius: 5px;
+              }
 
-        .booked {
-            background-color: gray;
-            color: white;
-            cursor: not-allowed;
-            }
-        .available, .empty{
-            border: 1px solid #858585;
-            }
-        .d-none {
-            display: none;
-             }
+              .booked {
+                  background-color: gray;
+                  color: white;
+                  cursor: not-allowed;
+                  }
+              .available, .empty{
+                  border: 1px solid #858585;
+                  }
+              .d-none {
+                  display: none;
+                   }
 
-        /* Media Query for Smaller or Medium Screens */
-        @media (max-width: 768px) {
-            .seats-container {
-                flex-direction: column; /* Stack decks vertically */
-                align-items: center; /* Center decks horizontally */
-            }
+              /* Media Query for Smaller or Medium Screens */
+              @media (max-width: 768px) {
+                  .seats-container {
+                      flex-direction: column; /* Stack decks vertically */
+                      align-items: center; /* Center decks horizontally */
+                  }
 
-            .deck-container {
-                margin-bottom: 20px; /* Add spacing between stacked decks */
-            }
-        }
+                  .deck-container {
+                      margin-bottom: 20px; /* Add spacing between stacked decks */
+                  }
+              }
     </style>
 
 </head>
@@ -99,24 +120,69 @@
 
 <div class="wrapper">
     <div class="content-wrapper">
+        <!-- Sidebar -->
+        <nav class="col-md-3 col-lg-2 d-md-block bg-secondary text-white sidebar sidebar-sticky">
+            <div class="position-sticky pt-3">
+                <h3 class="text-white ">Passenger</h3>
+                <div class="navigation" th:replace="~{utility/passengerNavigation :: navigation}"></div>
+            </div>
+        </nav>
         <!-- Main Content -->
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
             <div class="pt-3 pb-2 mb-3 border-bottom">
                 <h4 class="text-start mb-2">BookMyBus</h4>
 
                 <div class="innerContainer">
-                    <h5 class="text-start mb-4">Select Bus</h5>
+                    <h5 class="text-start mb-4" th:if="${availableBuses.size() > 0}">Select Bus</h5>
+                    <h6 class="text-start mb-2">
+                        <span th:if="${availableBuses.size() > 0}">
+                            <span th:text="'Found ' + ${availableBuses.size()} + ' buses from : '"></span>
+                            <span class="from-place" th:text="${searchDto.fromPlace}"></span>
+                            <span style='font-size:18px;'>&#8594;</span>
+                            <span class="to-place" th:text="${searchDto.toPlace}"></span>
+                            on <span class="trip-date" th:text="' ' + ${searchDto.tripDate}"></span>
+                        </span>
+                        <span th:if="${availableBuses.size() == 0}">
+                            No buses found from :
+                            <span class="from-place" th:text="' ' + ${searchDto.fromPlace}"></span>
+                            <span style='font-size:18px;'>&#8594;</span>
+                            <span class="to-place" th:text="' ' + ${searchDto.toPlace}"></span>
+                            on <span class="trip-date" th:text="' ' + ${searchDto.tripDate}"></span>
 
-                    <form class="form-inline" th:action="@{/bookMyBus/passengerPortal/{id}/selectSeats(id=${passenger.id})}" method="post" id="passengerForm">
+                            <br><br>
+                        <a  th:href="@{/bookMyBus/passengerPortal/{id}/searchBus( id=${passenger.id} ) }">
+                            Retry searching bus
+                        </a>
+                        </span>
+                    </h6>
+
+                    <form class="form-inline" th:action="@{/bookMyBus/passengerPortal/{id}/selectSeats(id=${passenger.id})}" method="post" id="selectSeatForm">
                         <div th:each="bus : ${availableBuses}" class="bus-card">
                             <h5 th:text="${bus.name}" class="text-primary"></h5>
                             <p>Route: <span th:text="${bus.routes[0].departurePlace}"></span> → <span th:text="${bus.routes[0].arrivalPlace}"></span></p>
                             <p>Departure: <span th:text="${bus.routes[0].departureTime}"></span></p>
                             <p>Arrival: <span th:text="${bus.routes[0].arrivalTime}"></span></p>
 
+                            <p>
+                                <span th:if="${bus.baseFareSeaterType > 0}">
+                                    <strong>Seater price:</strong>
+                                    <span th:text="${bus.baseFareSeaterType + ' Rs'}"></span>
+                                </span>
+                                <span th:if="${bus.baseFareSemiSleeperType > 0}">
+                                    | <strong>Semi sleeper price:</strong>
+                                         <span th:text="${bus.baseFareSemiSleeperType + ' Rs'}"></span>
+                                </span>
+                                <span th:if="${bus.baseFareSleeperType > 0}">
+                                    | <strong>Sleeper price:</strong>
+                                    <span th:text="${bus.baseFareSleeperType + ' Rs'}"></span>
+                                </span>
+                            </p>
+
                             <!-- Show Seats Button -->
-                            <button type="button" class="btn btn-info"
-                                    th:onclick="'showSeats(' + ${bus.id} + ')'" id="showSeatsBtn">
+                            <button type="button" class="btn btn-secondary"
+                                    th:data-bus-id="${bus.id}"
+                                    th:data-trip-date="${#temporals.format(searchDto.tripDate, 'yyyy-MM-dd')}"
+                                    onclick="showSeatsFromAttributes(this)">
                                 Show Seats
                             </button>
 
@@ -130,7 +196,9 @@
                         </div>
 
                         <!-- Submit Button -->
-                        <button type="submit" class="btn btn-primary" onclick="submitForm(event)">Submit</button>
+                        <div th:if="${availableBuses.size() > 0}">
+                        <button type="submit" class="btn btn-secondary" onclick="submitForm(event)">Book Seats</button>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -142,7 +210,13 @@
     let selectedSeats = [];
 
     // Function to show seats for a given bus
-    function showSeats(busId) {
+function showSeatsFromAttributes(buttonElement) {
+    const busId = buttonElement.dataset.busId; // Retrieve bus ID
+    const tripDate = buttonElement.dataset.tripDate; // Retrieve trip date
+
+    console.log("Bus ID:", busId);
+    console.log("Trip Date:", tripDate);
+
         const container = document.getElementById(`seats-container-${busId}`);
         if (!container) return;
 
@@ -151,7 +225,9 @@
             return; // Hide if already visible
         }
 
-        fetch(`/bookMyBus/passengerPortal/${busId}/seatsss`)
+    const url = `/bookMyBus/passengerPortal/${busId}/seatsss?tripDate=${encodeURIComponent(tripDate)}`;
+
+     fetch(url)
             .then(response => response.json())
             .then(data => {
                 renderSeats(data, container, busId);
@@ -182,8 +258,11 @@
         }
 
         lowerDeckWrapper.appendChild(lowerDeckContainer);
+        container.appendChild(lowerDeckWrapper);
 
-        // Upper Deck
+    // Upper Deck (only render if there are seats)
+    const upperLeftCount = data.seats.upperLeft ? data.seats.upperLeft.length : 0;
+     if (upperLeftCount > 0 ) {
         const upperDeckWrapper = document.createElement('div');
         upperDeckWrapper.className = 'deck-wrapper';
 
@@ -200,10 +279,10 @@
         if (data.upperRightSeatCountInEachRow && data.upperTotalRowsCount) {
             upperDeckContainer.innerHTML += renderSection(data.seats.upperRight, "Upper Deck - Right", data.upperRightSeatCountInEachRow, data.upperTotalRowsCount, busId);
         }
-
         upperDeckWrapper.appendChild(upperDeckContainer);
-        container.appendChild(lowerDeckWrapper);
         container.appendChild(upperDeckWrapper);
+     }
+
     }
 
     // Function to render a section of seats
@@ -242,7 +321,6 @@
         if (seatElement.classList.contains("booked")) return; // Don't allow selection of booked seats
 
         const seatId = seatElement.dataset.seatId;
-        const seatNumber = seatElement.dataset.seatNumber;
 
         // Toggle selection
         if (selectedSeats.includes(seatId)) {
@@ -273,8 +351,10 @@
         const selectedSeatsInput = document.getElementById('selectedSeats');
         selectedSeatsInput.value = selectedSeats.join(',');
 
-        // Now submit the form
-        document.getElementById('passengerForm').submit();
+
+
+    // Now submit the form
+    document.getElementById('selectSeatForm').submit();
     }
 </script>
 

@@ -29,4 +29,11 @@ public class StopService {
             throw new NoSuchElementException("Stop details are not added in the database");
         return receivedStops.stream().map(StopMapper::toMapDto).toList();
     }
+
+    public List<StopDto> getStopsForBus(Long busId) {
+        List<Stop> retrievedStops = stopRepository.findByBusOperatorId(busId);
+        if(retrievedStops.isEmpty())
+            throw new NoSuchElementException("Stop details are not added in the database");
+        return retrievedStops.stream().map(StopMapper::toMapDto).toList();
+    }
 }

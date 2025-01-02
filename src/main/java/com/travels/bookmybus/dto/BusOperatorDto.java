@@ -3,10 +3,7 @@ package com.travels.bookmybus.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -15,6 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@ToString
 public class BusOperatorDto {
     private Long id;
     // Bus basic details
@@ -51,6 +49,7 @@ public class BusOperatorDto {
     @Pattern(regexp = "^(3[0-9]|4[0-9]|5[0-9]|6[0-9]|7[0-3])$", message = "Value must be a number between 30 and 73")
     private String totalSeatsCount;
 
+
     @NotBlank(message = "Field should not be blank")
     private String lowerLeftSeaterType;
     @Pattern(regexp = "^[1-2]$", message = "Value must be a 1 or 2")
@@ -73,18 +72,22 @@ public class BusOperatorDto {
     private String restStopAtPlace;
     private LocalTime restStopTime;
 
+    @ToString.Exclude
     private List<SeatDto> seats = new ArrayList<>(); //1LDL,1LDW,1LSW -> 1UDL,2UDW,2USW -->
 
+    @ToString.Exclude
     private List<RouteDto> routes = new ArrayList<>();
-
+    @ToString.Exclude
     private List<StopDto> allBusStops = new ArrayList<>();
-
+    @ToString.Exclude
     private List<BookingDto> seatBookedStatus = new ArrayList<>();
 
     // Fare details
 //    @NotBlank(message = "Field should not be blank")
-    @Builder.Default
-    private String baseFare = "950.99";
+    private Double baseFareSeaterType ;
+    private Double baseFareSemiSleeperType ;
+    private Double baseFareSleeperType ;
 //    @NotBlank(message = "Field should not be blank")
-    private String insuranceFee = "10.00"; // Insurance fee, added optionally per ticket
+    @Builder.Default
+    private Double insuranceFee = 10.00; // Insurance fee, added optionally per ticket
 }

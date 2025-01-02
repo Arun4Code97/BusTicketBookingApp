@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" th:href="@{/passenger_fevicon.png}">
+    <title>BookMyBus</title>
+    <link rel="stylesheet" th:href="@{/bootstrap/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/portalTemplate.css}">
+    <style>
+
+        .table {
+            border-collapse: separate;
+            border-spacing: 0;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .table thead th {
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .table tbody tr:last-child td {
+            border-bottom: none;
+        }
+    </style>
+
+
+</head>
+<body>
+<!-- Contents & Footer-->
+<div class="wrapper">
+    <!-- 1. Sidebar and Main content (Contents) -->
+    <div class="content-wrapper">
+        <!-- Sidebar -->
+        <nav class="col-md-3 col-lg-2 d-md-block bg-secondary text-white sidebar sidebar-sticky">
+            <div class="position-sticky pt-3">
+                <h3 class="text-white ">Passenger</h3>
+                <div class="navigation" th:replace="~{utility/passengerNavigation :: navigation}"></div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="pt-3 pb-2 mb-3 border-bottom">
+
+                <h4 class="text-start mb-2 ">BookMyBus </h4>
+
+                <div class="innerContainer">
+                    <div class="container mt-4">
+                        <h4 class="mb-4">Your Booked Tickets</h4>
+
+                        <div th:each="group : ${groupedBookings}">
+                            <div class="card mb-3  bg-secondary text-white">
+                                <div class="card-header ">
+                                    <div class="row">
+                                        <!-- Left Column -->
+                                        <div class="col-md-6">
+                                            <h5 class="mb-0" >Boarding Date : <span  th:text="${group.bookingDate}"></span></h5>
+                                            <br>
+                                            <p><strong>Bus Operator Name : </strong> <span class="text-white" th:text="${group.busOperatorName}"></span></p>
+                                            <p><strong>Bus Number : </strong> <span class="text-white" th:text="${group.busNumber}"></span></p>
+                                            <p><strong>Driver Contact : </strong> <span class="text-white" th:text="${group.driverContact}"></span></p>
+                                        </div>
+
+                                        <!-- Right Column -->
+                                        <div class="col-md-6">
+                                            <br><br>
+                                            <p><strong>Route : </strong> <span class="text-white"  th:text="${group.route}"></span></p>
+                                            <p>
+                                                <strong>Boarding Point : </strong>
+                                                <span class="text-white" th:text="${group.boardingPoint}"></span>
+                                                on <span class="text-white"  th:text="${group.boardingDate}"></span>
+                                            </p>
+                                            <p>
+                                                <strong>Dropping Point : </strong>
+                                                <span class="text-white"  th:text="${group.droppingPoint}"></span>
+                                                on <span class="text-white" th:text="${group.droppingDate}"></span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="card-body">
+                                    <table class="table">
+                                        <thead>
+                                        <tr>
+                                            <th>Seat Number</th>
+                                            <th>Passenger Name</th>
+                                            <th>Gender</th>
+                                            <th>Fare</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr th:each="booking : ${group.bookings}">
+                                            <td th:text="${booking.seatNumber}"></td>
+                                            <td th:text="${booking.passengerName}"></td>
+                                            <td th:text="${booking.gender}" ></td>
+                                            <td th:text="${booking.seatFare}"></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="3" class="text-end"><strong>Total Fare:</strong></td>
+                                            <td><strong th:text="${group.totalFare}"></strong></td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
+
+
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- 2. Footer -->
+
+    <footer class="bg-secondary text-white">
+        <hr />
+        <div th:replace="~{utility/footer :: footer}"></div>
+    </footer>
+
+</div>
+
+</body>
+
+</html>

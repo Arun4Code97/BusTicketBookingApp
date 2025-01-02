@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" th:href="@{/passenger_fevicon.png}">
+    <title>BookMyBus</title>
+    <link rel="stylesheet" th:href="@{/bootstrap/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/portalTemplate.css}">
+    <style>
+
+    </style>
+
+</head>
+<body>
+<!-- Contents & Footer-->
+<div class="wrapper">
+    <!-- 1. Sidebar and Main content (Contents) -->
+    <div class="content-wrapper">
+        <!-- Sidebar -->
+        <nav class="col-md-3 col-lg-2 d-md-block bg-secondary text-white sidebar sidebar-sticky">
+            <div class="position-sticky pt-3">
+                <h3 class="text-white ">Passenger</h3>
+                <div class="navigation" th:replace="~{utility/passengerNavigation :: navigation}"></div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="pt-3 pb-2 mb-3 border-bottom">
+
+                <h4 class="text-start mb-2 ">BookMyBus </h4>
+
+                <div class="innerContainer">
+                    <h5 class="text-start mb-2 ">Add passenger details </h5>
+                    <form th:action="@{/bookMyBus/passengerPortal/booking/savePassengerDetails}" method="post">
+                    <!-- Display Selected Details -->
+                    <div class="card my-4">
+                        <div class="card-body row">
+                            <div class="col-md-6">
+                                <p><strong>Bus Operator : </strong> <span th:text="${bus.name}"></span></p>
+                                <p>
+                                    <strong>Route : </strong>
+                                    <span th:text="${bus.routes[0].departurePlace}"></span>
+                                    <span style='font-size:18px;'>&#8594;</span>
+                                    <span th:text="${bus.routes[0].arrivalPlace}"></span>
+                                </p>
+
+                                <p><strong>Journey Date : </strong> <span th:text="${seatsData[0].tripDate}"></span></p>
+
+                                <p><strong>Boarding Point : </strong> <span th:text="${boardingPoint}"></span></p>
+
+                                <p><strong>Dropping Point : </strong> <span th:text="${droppingPoint}"></span></p>
+
+                                <p>
+                                    <span th:if="${bus.baseFareSeaterType > 0}">
+                                        <strong>Seater price : </strong>
+                                        <span th:text="${bus.baseFareSeaterType + ' Rs'}"></span>
+                                    </span>
+                                    <span th:if="${bus.baseFareSemiSleeperType > 0}">
+                                        | <strong>Semi sleeper price : </strong>
+                                         <span th:text="${bus.baseFareSemiSleeperType + ' Rs'}"></span>
+                                    </span>
+                                    <span th:if="${bus.baseFareSleeperType > 0}">
+                                        | <strong>Sleeper price : </strong>
+                                        <span th:text="${bus.baseFareSleeperType + ' Rs'}"></span>
+                                    </span>
+                                </p>
+
+                                <p><strong>Selected Seats : </strong>
+                                    <span th:text="${seatNumbers}"></span>
+                                </p>
+                            </div>
+
+                            <div class="col-md-6">
+                                <p><strong>Booking Name:</strong>
+                                    <span th:text="${passenger.firstName + ' ' + passenger.lastName}"></span>
+                                </p>
+
+                                <div class="mb-3 d-flex align-items-center">
+                                    <label for="primaryMobile" class="form-label me-3" ><strong>Passenger Contact:</strong></label>
+                                    <input type="text" id="primaryMobile" name="primaryMobile" class="form-control" style="width:130px;"
+                                           th:value="${passenger.primaryMobile}" required>
+                                </div>
+                                <div class="mb-3 d-flex align-items-center">
+                                    <label for="primaryMobile" class="form-label me-3" ><strong>Alternate Contact:</strong></label>
+                                    <input type="text" id="secondaryMobile" name="secondaryMobile" class="form-control" style="width:130px;"
+                                           th:value="${passenger.secondaryMobile}" required>
+                                </div>
+                                <p><strong> Email Address:</strong>
+                                    <span th:text="${passenger.email}"></span>
+                                </p>
+
+
+                                <p><strong> Insurance for a seat :</strong>
+                                    <span th:text="${bus.insuranceFee + 'Rs'}"></span>
+                                </p>
+                                <p><strong> Total Fare :</strong>
+                                    <span th:text="${amountToPay} + 'Rs'"></span>
+                                </p>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- Passenger Details Form -->
+
+                        <input type="hidden" name="busId" th:value="${bus.id}" />
+                        <input type="hidden" name="passengerId" th:value="${passenger.id}" />
+                        <input type="hidden" name="boardingPoint" th:value="${boardingPoint}" />
+                        <input type="hidden" name="droppingPoint" th:value="${droppingPoint}" />
+
+                        <table class="table table-bordered">
+                            <thead>
+                            <tr>
+                                <th>Seat Number</th>
+                                <th>Seat Type</th>
+                                <th>Passenger Name</th>
+                                <th>Gender</th>
+                                <th>Age</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="seat : ${seatsData}">
+                                <td>
+                                    <input type="hidden" name="seatNumbers" th:value="${seat.id}" />
+                                    <span th:text="${seat.seatNumber}"></span>
+                                </td>
+                                <td>
+                                    <span th:text="${seat.seatType}"></span>
+                                </td>
+                                <td>
+                                    <input type="text" name="BookingFor" class="form-control" placeholder="Enter name" required />
+                                </td>
+                                <td>
+                                    <select name="genders" class="form-control" required>
+                                        <option value="" disabled selected>Select Gender</option>
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="number" name="ages" class="form-control" placeholder="Enter age" min="1" max="120" required />
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-secondary">Confirm Booking</button>
+                            <a class="nav-link text-white" th:href="@{/bookMyBus/passengerPortal/{id}/searchBus( id=${passenger.id} ) }">
+                                Cancel Booking
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 2. Footer -->
+
+    <footer class="bg-secondary text-white">
+        <hr />
+        <div th:replace="~{utility/footer :: footer}"></div>
+    </footer>
+
+</div>
+
+</body>
+
+</html>

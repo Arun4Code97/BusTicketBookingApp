@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" th:href="@{/passenger_fevicon.png}">
+    <title>BookMyBus</title>
+    <link rel="stylesheet" th:href="@{/bootstrap/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/portalTemplate.css}">
+    <style>
+
+    </style>
+
+</head>
+<body>
+<!-- Contents & Footer-->
+<div class="wrapper">
+    <!-- 1. Sidebar and Main content (Contents) -->
+    <div class="content-wrapper">
+        <!-- Sidebar -->
+        <nav class="col-md-3 col-lg-2 d-md-block bg-secondary text-white sidebar sidebar-sticky">
+            <div class="position-sticky pt-3">
+                <h3 class="text-white ">Passenger</h3>
+                <div class="navigation" th:replace="~{utility/passengerNavigation :: navigation}"></div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="pt-3 pb-2 mb-3 border-bottom">
+
+                <h4 class="text-start mb-2 ">BookMyBus </h4>
+
+                <div class="innerContainer">
+
+
+                    <h4 style="color:green;" th:if="${successMessage}" th:text="${successMessage}"></h4>
+                    <br>
+                    <br>
+                    <h5 class="text-start mb-2">Ticket Details</h5>
+                    <div>
+                        <p>
+                            <strong>Route : </strong>
+                            <span th:text="${bookings[0].busDepartureLocation} + ' to ' + ${bookings[0].busArrivalLocation}"></span>
+                        </p>
+                        <p><strong>Bus Operator Name : </strong> <span th:text="${bus.name}"></span></p>
+                        <p><strong>Bus Number : </strong> <span th:text="${bus.registerNumber}"></span></p>
+                        <p><strong>Driver Contact:</strong> <span th:text="${bus.driverMobile}"></span></p>
+
+                        <p>
+                            <strong>Boarding Point:</strong> <span th:text="${bookings[0].passengerBoardingPlace}"></span>
+                            at <span th:text="${bookings[0].passengerBoardingDate} "></span>
+                            <span th:text=" ${bookings[0].passengerBoardingTime}"></span>
+                        </p>
+
+                        <p>
+                            <strong>Dropping Point:</strong> <span th:text="${bookings[0].passengerDroppingPlace}"></span>
+                            at <span th:text="${bookings[0].passengerDroppingDate} "></span>
+                            <span th:text=" ${bookings[0].passengerDroppingTime}"></span>
+                        </p>
+
+
+                    </div>
+
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th>Seat Number</th>
+                            <th>Passenger Name</th>
+                            <th>Age</th>
+                            <th>Gender</th>
+                            <th>Fare</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="booking : ${bookings}">
+                            <td th:text="${booking.seatNumber}"></td>
+                            <td th:text="${booking.passengerName}"></td>
+                            <td th:text="${booking.age}"></td>
+                            <td th:text="${booking.gender}"></td>
+                            <td th:text="${booking.seatFare}"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="text-center">
+                        <a class="btn btn-secondary me-3"
+                           th:href="@{/bookMyBus/passengerPortal/{id}/bookedTickets (id=${ passenger.id })}">
+                            View Booking History
+                        </a>
+                        <a class="btn btn-secondary"
+                           th:href="@{/bookMyBus/passengerPortal/{id}/searchBus (id=${passenger.id})}">
+                            Book Again
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- 2. Footer -->
+
+    <footer class="bg-secondary text-white">
+        <hr />
+        <div th:replace="~{utility/footer :: footer}"></div>
+    </footer>
+
+</div>
+
+</body>
+
+</html>

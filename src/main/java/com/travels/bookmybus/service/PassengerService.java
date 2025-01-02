@@ -10,6 +10,7 @@ import com.travels.bookmybus.model.BusOperator;
 import com.travels.bookmybus.model.Passenger;
 import com.travels.bookmybus.model.Route;
 import com.travels.bookmybus.model.Seat;
+import com.travels.bookmybus.repository.BusRepository;
 import com.travels.bookmybus.repository.PassengerRepository;
 import com.travels.bookmybus.repository.RouteRepository;
 import com.travels.bookmybus.repository.SeatRepository;
@@ -17,16 +18,22 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class PassengerService {
     private final PassengerRepository passengerRepository;
+    private final BusRepository busRepository;
     private final RouteRepository routeRepository;
     private final SeatRepository seatRepository;
     public PassengerDto savePassenger(PassengerDto passengerDto){
@@ -54,7 +61,9 @@ public class PassengerService {
                 .orElseThrow(() -> new NoSuchElementException("Passenger Email Id not found in the database"));
     }
     public List<BusOperatorDto> getBusesByRoute(SearchDto searchDto, Long passengerId) {
-        List<Route> retrievedRoutes = routeRepository.findByDeparturePlaceAndArrivalPlace(searchDto.getFromPlace(), searchDto.getToPlace());
+        List<Route> retrievedRoutes = routeRepository.findByDeparturePlaceAndArrivalPlace(
+                searchDto.getFromPlace(),
+                searchDto.getToPlace() );
 
         System.out.println("\n\n\n\n Retrieved Routes In Searched Route -Size  :\t"
                 + retrievedRoutes.size());
@@ -86,13 +95,11 @@ public class PassengerService {
                 if (!seat.getIsBooked()) {
                     seat.setIsBooked(true);
                     seatRepository.save(seat); // Save the updated seat status
-
-                    // Log the seat details to the console
-                    System.out.println("Seat booked: " + seat.getSeatNumber() + " (Seat Type: " + seat.getSeatType() + ")");
                 } else {
                     // Log if the seat is already booked
                     System.out.println("Seat " + seatId + " is already booked or not found.");
                 }
+
             }
             return true; // Successfully booked seats
         } catch (Exception e) {
@@ -100,5 +107,25 @@ public class PassengerService {
             return false; // Booking failed due to an error
         }
     }
+
+
+    public LocalTime extractTimeFromPoint(String point) {
+        String timeRegex = "\\((.*?)\\)"; // Regex to extract the time inside parentheses
+        Pattern pattern = Pattern.compile(timeRegex);
+        Matcher matcher = pattern.matcher(point);
+
+        if (matcher.find()) {
+            String timeText = matcher.group(1); // Extracted time string, e.g., "9:30 PM"
+            try {
+                // Define a formatter for the 12-hour format with AM/PM
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("h:mm a");
+                return LocalTime.parse(timeText, formatter);
+            } catch (DateTimeParseException e) {
+                e.printStackTrace();
+            }
+        }
+        return null; // Return null if the time cannot be parsed
+    }
+
 
 }

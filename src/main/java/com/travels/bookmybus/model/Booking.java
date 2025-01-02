@@ -12,20 +12,39 @@ import java.time.LocalTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class Booking {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
     private String seatNumber;
+    private String seatType;
+    private Double seatFare;
+
+    private String passengerName;
+    private int age;
+    private String gender;
+    private Long contactNumber;
+    private Long secondaryNumber;
+    private String email;
+
     private LocalDate bookedDate;
     private LocalTime bookedTime;
-    private LocalDate journeyDate;
-    private LocalTime journeyTime;
 
-    @ManyToOne
-    @JoinColumn(name = "passenger_id")
-    private Passenger passenger;
+    private String passengerBoardingPlace;
+    private LocalDate passengerBoardingDate;
+    private LocalTime passengerBoardingTime;
 
+    private String passengerDroppingPlace;
+    private LocalDate passengerDroppingDate;
+    private LocalTime passengerDroppingTime;
+
+    private String busDepartureLocation;
+    private String busArrivalLocation;
+
+    private Long passengerId;
+    private Long busId;
+    private Long seatId;
     @ManyToOne
     @JoinColumn(name = "bus_operator_id")
     @ToString.Exclude

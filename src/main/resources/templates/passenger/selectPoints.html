@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" th:href="@{/passenger_fevicon.png}">
+    <title>BookMyBus</title>
+    <link rel="stylesheet" th:href="@{/bootstrap/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/portalTemplate.css}">
+    <style>
+        .selection-container {
+            display: flex;
+            justify-content: row;
+            margin-top: 20px;
+
+        }
+
+        .selection-column {
+            margin: 0 10px;
+        }
+
+        .radio-button-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .radio-button {
+            display: block;
+            margin-bottom: 5px;
+            width:300px;
+            cursor: pointer;
+            transition: background-color 0.3s, border-color 0.3s;
+            text-align: center;
+        }
+
+        .radio-button input {
+            display: none;
+        }
+
+        .radio-button input:checked + label {
+            border:2px solid #6c757d;
+            background-color: #6c757d;
+            color: white;
+        }
+
+    </style>
+</head>
+<body>
+<div class="wrapper">
+    <div class="content-wrapper">
+        <nav class="col-md-3 col-lg-2 d-md-block bg-secondary text-white sidebar sidebar-sticky">
+            <div class="position-sticky pt-3">
+                <h3 class="text-white">Passenger</h3>
+                <div class="navigation" th:replace="~{utility/passengerNavigation :: navigation}"></div>
+            </div>
+        </nav>
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="pt-3 pb-2 mb-3 border-bottom">
+                <h3 class="text-start mb-2">BookMyBus</h3>
+                <div class="innerContainer">
+                    <h5 class="text-start mb-2">Select stops</h5>
+                    <form th:action="@{/bookMyBus/passengerPortal/booking/addPassengerDetails}" method="get">
+                        <input type="hidden" name="passengerId" th:value="${passenger.id}">
+                        <input type="hidden" name="busId" th:value="${busId}">
+
+                        <div class="selection-container">
+                            <!-- Boarding Points -->
+                            <div class="selection-column col-4">
+                                <h6 class="mb-3">Boarding Points</h6>
+                                <div class="radio-button-group">
+                                    <div th:each="point : ${boardingPoints}" class="radio-button">
+                                        <input type="radio" th:attr="id='boardingPoint_' + ${point.id}" name="boardingPoint"
+                                               th:value="${point.stopName + ' (' + point.arrivesAt + ')' }" required>
+                                        <label th:for="'boardingPoint_' + ${point.id}" class="form-control"
+                                               th:text="${point.stopName + ' (' + point.arrivesAt + ')'}"></label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Dropping Points -->
+                            <div class="selection-column col-4">
+                                <h6 class="mb-3">Dropping Points</h6>
+                                <div class="radio-button-group">
+                                    <div th:each="point : ${droppingPoints}" class="radio-button">
+                                        <input type="radio" th:attr="id='droppingPoint_' + ${point.id}" name="droppingPoint"
+                                               th:value="${point.stopName + ' (' + point.arrivesAt + ')'}" required>
+                                        <label th:for="'droppingPoint_' + ${point.id}" class="form-control"
+                                               th:text="${point.stopName + ' (' + point.arrivesAt + ')'}"></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="btn btn-secondary mt-4">Add passenger details</button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+    <footer class="bg-secondary text-white">
+        <hr />
+        <div th:replace="~{utility/footer :: footer}"></div>
+    </footer>
+</div>
+</body>
+</html>

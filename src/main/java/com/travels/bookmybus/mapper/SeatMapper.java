@@ -21,6 +21,7 @@ public class SeatMapper {
                 .id(id)
                 .seatNumber(seatDto.getSeatNumber())
                 .seatType(seatDto.getSeatType())
+                .tripDate(seatDto.getTripDate())
                 .isBooked(seatDto.getIsBooked())
                 .build();
     }
@@ -29,6 +30,7 @@ public class SeatMapper {
                 .id(seat.getId())
                 .seatNumber(seat.getSeatNumber())
                 .seatType(seat.getSeatType())
+                .tripDate(seat.getTripDate())
                 .isBooked(seat.getIsBooked())
                 .build();
     }

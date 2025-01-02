@@ -7,6 +7,7 @@ import com.travels.bookmybus.repository.SeatRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -25,13 +26,17 @@ public class SeatService {
       return retrievedSeat.map(SeatMapper::toMapDto)
               .orElseThrow(() -> new NoSuchElementException("Given Seat Id not found"));
     }
-    public List<SeatDto> getSeatsByBusOperator(Long busOperatorId) {
-        List<Seat> seats = seatRepository.findByBusOperatorId(busOperatorId);
+    public Seat getSeatEntityById(Long id){
+        Optional<Seat> retrievedSeat = seatRepository.findById(id);
+        return retrievedSeat.get();
+    }
+    public List<SeatDto> getSeatsByBusOperatorAndTripDate(Long busOperatorId, LocalDate tripDate) {
+        List<Seat> seats = seatRepository.findByBusOperatorIdAndTripDate(busOperatorId,tripDate);
         return seats.stream().map(SeatMapper::toMapDto).toList();
     }
-    public List<Seat> getSeatsEntityByBusOperator(Long busOperatorId) {
-        return  seatRepository.findByBusOperatorId(busOperatorId);
-    }
+//    public List<Seat> getSeatsEntityByBusOperator(Long busOperatorId) {
+//        return  seatRepository.findByBusOperatorId(busOperatorId);
+//    }
     public List<SeatDto> getAll(){
        List<Seat> retrievedSeats = seatRepository.findAll();
        if(retrievedSeats.isEmpty())
@@ -44,7 +49,9 @@ public class SeatService {
     public List<Seat> bookSeats(Long busId, List<Long> seatIds) {
         // Fetch the seats by IDs
         List<Seat> seats = seatRepository.findAllById(seatIds);
-
+        LocalDate tripDate = null;
+        if(!seats.isEmpty())
+            tripDate = seats.get(0).getTripDate(); //collecting tripDate
         // Check availability and book the seats
         for (Seat seat : seats) {
             if (seat.getIsBooked()) {
@@ -57,6 +64,6 @@ public class SeatService {
         seatRepository.saveAll(seats);
 
         // Fetch all seats for the bus to update the UI
-        return seatRepository.findByBusOperatorId(busId);
+        return seatRepository.findByBusOperatorIdAndTripDate(busId,tripDate);
     }
 }

@@ -2,9 +2,7 @@ package com.travels.bookmybus.controller;
 
 import com.travels.bookmybus.dto.*;
 import com.travels.bookmybus.model.Seat;
-import com.travels.bookmybus.service.BusOperatorService;
-import com.travels.bookmybus.service.PassengerService;
-import com.travels.bookmybus.service.SeatService;
+import com.travels.bookmybus.service.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -14,19 +12,25 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/bookMyBus")
+@SessionAttributes("selectedSeats")
 public class PassengerController {
     private final PassengerService passengerService;
     private final SeatService seatService;
+    private final StopService stopService;
     private final BusOperatorService busOperatorService;
+    private final BookingService bookingService;
+
+    List<Long> selectedSeats = new ArrayList<>();
     @GetMapping("/addPassenger")
     public String toHandleAddPassengerRequest(Model model){
         PassengerDto passengerDto = new PassengerDto();
@@ -41,7 +45,6 @@ public class PassengerController {
         model.addAttribute("mode","add");
         //Handle Validation Error if exists
         if(result.hasErrors()){
-//            result.getAllErrors().forEach(error -> System.out.println(error + error.getDefaultMessage()));
             return "passenger/passengerForm";
         }
 
@@ -86,7 +89,6 @@ public class PassengerController {
 
         // For showing added notification and redirect to patient Home page
         model.addAttribute("success", true);
-//        return "redirect:/bookMyBus/passengerPortal/" + passengerId;
         return "passenger/setPassword";
     }
     @GetMapping("/passengerPortal/{id}" )
@@ -95,8 +97,9 @@ public class PassengerController {
         PassengerDto retrievedPassenger = passengerService.getById(passengerId);
 
         model.addAttribute("passenger", retrievedPassenger);
-        model.addAttribute("mode","view");
-        return "passenger/busBooking";
+        model.addAttribute("searchDto",new SearchDto());
+        model.addAttribute("mode","add");
+        return "passenger/busRouteSearchForm";
     }
     @GetMapping("/passengerPortal/{id}/update" )
     public String toHandlePassengerPortalUpdateProfileRequest(@PathVariable("id") Long  passengerId,Model model){
@@ -147,97 +150,21 @@ public class PassengerController {
         List<BusOperatorDto> availableBusesInSearchedRoute = passengerService.
                 getBusesByRoute(searchDto,passengerId);
 
-        System.out.println("After cnverting to Dto's " + availableBusesInSearchedRoute);
+
         model.addAttribute("searchDto",searchDto);
         model.addAttribute("availableBuses",availableBusesInSearchedRoute);
+
         model.addAttribute("mode","add");
         return "passenger/showAvailableBus";
     }
-    @GetMapping("/passengerPortal/{id}/seats")
-    public ResponseEntity<List<SeatDto>> getSeats(@PathVariable("id") Long busOperatorId) {
-        try {
-            List<SeatDto> seats = seatService.getSeatsByBusOperator(busOperatorId);
-            System.out.println("\n\n\nAJAX Call: \n" + seats);
-            return ResponseEntity.ok(seats);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-    @GetMapping("/passengerPortal/{busId}/seatss")
-    public ResponseEntity<Map<String, List<Seat>>> getSeatss(@PathVariable("busId") Long busId) {
-        List<Seat> allSeats = seatService.getSeatsEntityByBusOperator(busId);
 
-        // Separate the seats based on their deck (lower/upper) and side (left/right)
-        Map<String, List<Seat>> seatsMap = new HashMap<>();
-
-        // Group seats by their categories (lowerLeft, lowerRight, upperLeft, upperRight)
-        seatsMap.put("lowerLeft", allSeats.stream()
-                .filter(seat -> seat.getSeatNumber().startsWith("L") && seat.getSeatNumber().charAt(seat.getSeatNumber().length() - 2) == 'L')
-                .collect(Collectors.toList()));
-
-        seatsMap.put("lowerRight", allSeats.stream()
-                .filter(seat -> seat.getSeatNumber().startsWith("L") && seat.getSeatNumber().charAt(seat.getSeatNumber().length() - 2) == 'R')
-                .collect(Collectors.toList()));
-
-        seatsMap.put("upperLeft", allSeats.stream()
-                .filter(seat -> seat.getSeatNumber().startsWith("U") && seat.getSeatNumber().charAt(seat.getSeatNumber().length() - 2) == 'L')
-                .collect(Collectors.toList()));
-
-        seatsMap.put("upperRight", allSeats.stream()
-                .filter(seat -> seat.getSeatNumber().startsWith("U") && seat.getSeatNumber().charAt(seat.getSeatNumber().length() - 2) == 'R')
-                .collect(Collectors.toList()));
-
-        return ResponseEntity.ok(seatsMap);
-    }
-//    @GetMapping("/passengerPortal/{busId}/seatsss")
-//    public ResponseEntity<Map<String, Object>> getSeatsss(@PathVariable("busId") Long busOperatorId) {
-//        // Fetch seats associated with the bus operator
-//        List<SeatDto> seats = seatService.getSeatsByBusOperator(busOperatorId);
-//
-//        // Separate seats into lower-left, lower-right, upper-left, and upper-right categories
-//        Map<String, List<SeatDto>> seatsMap = new HashMap<>();
-//        seatsMap.put("lowerLeft", seats.stream()
-//                .filter(seat -> seat.getSeatNumber().startsWith("L") && seat.getSeatNumber().endsWith("L"))
-//                .collect(Collectors.toList()));
-//        seatsMap.put("lowerRight", seats.stream()
-//                .filter(seat -> seat.getSeatNumber().startsWith("L") && seat.getSeatNumber().endsWith("R"))
-//                .collect(Collectors.toList()));
-//        seatsMap.put("upperLeft", seats.stream()
-//                .filter(seat -> seat.getSeatNumber().startsWith("U") && seat.getSeatNumber().endsWith("L"))
-//                .collect(Collectors.toList()));
-//        seatsMap.put("upperRight", seats.stream()
-//                .filter(seat -> seat.getSeatNumber().startsWith("U") && seat.getSeatNumber().endsWith("R"))
-//                .collect(Collectors.toList()));
-//
-//        // Fetch the bus operator's configuration details
-//        BusOperatorDto busOperatorDto = busOperatorService.getById(busOperatorId);
-//
-//        // Seat configuration derived from the bus operator
-//        Map<String, Object> config = Map.of(
-//                "lowerLeftSeatCountInEachRow", Integer.parseInt(busOperatorDto.getLowerLeftSeatCountInEachRow()),
-//                "lowerLeftTotalRowsCount", Integer.parseInt(busOperatorDto.getLowerLeftTotalRowsCount()),
-//                "lowerRightSeatCountInEachRow", Integer.parseInt(busOperatorDto.getLowerRightSeatCountInEachRow()),
-//                "lowerRightTotalRowsCount", Integer.parseInt(busOperatorDto.getLowerRightTotalRowsCount()),
-//                "upperLeftSeatCountInEachRow", 1, // Default value, can be overridden
-//                "upperRightSeatCountInEachRow", 2, // Default value, can be overridden
-//                "upperTotalRowsCount", Integer.parseInt(busOperatorDto.getUpperTotalRowsCount())
-//        );
-//
-//        // Construct the final response
-//        Map<String, Object> response = new HashMap<>();
-//        response.put("seats", seatsMap);
-//        response.put("config", config);
-//
-//        return ResponseEntity.ok(response);
-//    }
 @GetMapping("/passengerPortal/{busId}/seatsss")
-public ResponseEntity<Map<String, Object>> getSeatsss(@PathVariable("busId") Long busOperatorId) {
+public ResponseEntity<Map<String, Object>> getSeatsss(@PathVariable("busId") Long busOperatorId,
+                                                      @RequestParam(name = "tripDate")LocalDate tripDate) {
     // Fetch seats associated with the bus operator
-    List<SeatDto> seats = seatService.getSeatsByBusOperator(busOperatorId);
-        seats.get(0).setIsBooked(true);
-    System.out.println( "\n\n\nAfter Manual setup changing \t:" + seats.get(0));
-        seats.get(4).setIsBooked(true);
-        seats.get(15).setIsBooked(true);
+    List<SeatDto> seats = seatService.getSeatsByBusOperatorAndTripDate(busOperatorId,tripDate);
+
+
     // Separate seats into lower-left, lower-right, upper-left, and upper-right categories
     Map<String, List<SeatDto>> seatsMap = new HashMap<>();
     seatsMap.put("lowerLeft", seats.stream()
@@ -286,23 +213,301 @@ public ResponseEntity<Map<String, Object>> getSeatsss(@PathVariable("busId") Lon
     @PostMapping("/passengerPortal/{id}/selectSeats")
     public String selectSeats(
             @PathVariable("id") Long id, // Passenger ID
-            @RequestParam("selectedSeats") String selectedSeats) {
+            @RequestParam("selectedSeats") String selectedSeats,Model model) {
 
+        // Split seat numbers
         List<String> seatList = Arrays.asList(selectedSeats.split(","));
+        model.addAttribute("selectedSeats", seatList);
 
-        // Log for debugging
-        System.out.println("\n\n\nPassenger ID: " + id);
-        System.out.println("Selected Seats: " + selectedSeats +"\n\n\n");
+
+
+        Long seatId = Long.parseLong(seatList.get(0));
+        Long busId = seatService.getSeatEntityById(seatId).getBusOperator().getId();
+
+        // Temporarily blocking these seats by saving it, In future Planning to add payment,
+        // If payments failed, these seats will be released to book again
 
         // Process the seat booking
         boolean isBooked = passengerService.bookSeats(seatList);
 
+
+
         if (isBooked) {
             // Redirect or show confirmation message
-            return "redirect:/bookingConfirmation";
+            return "redirect:/bookMyBus/passengerPortal/"+id+"/selectPoints/"+busId;
         } else {
             // Show error message
             return "redirect:/bookingError";
         }
     }
+
+    @GetMapping("/passengerPortal/{id}/selectPoints/{busId}")
+    public String selectBoardingPoints(
+            @PathVariable("id") Long passengerId,
+            @PathVariable("busId") Long busId,
+            Model model) {
+
+        // Retrieve all stops for the bus
+        List<StopDto> stops = stopService.getStopsForBus(busId);
+
+        if (stops == null || stops.isEmpty()) {
+            throw new IllegalArgumentException("No stops found for the given bus ID.");
+        }
+
+        // Determine the reference times for boarding and dropping points
+        StopDto firstStop = stops.get(0);
+        StopDto lastStop = stops.get(stops.size()-1);
+
+        LocalTime boardingCutoff = firstStop.getLeavesAt().plusHours(2);
+        LocalTime droppingCutoff = lastStop.getArrivesAt().minusHours(2);
+
+        // Determine boarding and dropping points
+        List<StopDto> boardingPoints = stops.stream()
+                .filter(stop -> (
+                                   (
+                                     stop.getArrivesAt().isAfter( firstStop.getArrivesAt() ) ||
+                                     stop.getArrivesAt() == ( firstStop.getArrivesAt() )
+                                   )
+                                   && stop.getArrivesAt().isBefore( boardingCutoff )
+                                )
+                ).collect(Collectors.toList());
+
+        List<StopDto> droppingPoints = stops.stream()
+                .filter( stop -> (
+                                    (
+                                        stop.getArrivesAt().isBefore(lastStop.getArrivesAt()) ||
+                                        stop.getArrivesAt() == (lastStop.getArrivesAt())
+                                    )
+                                    && stop.getArrivesAt().isAfter(droppingCutoff)
+                                 )
+                ).collect(Collectors.toList());
+
+        PassengerDto retrievedPassenger = passengerService.getById(passengerId);
+
+        // Add data to the model
+        model.addAttribute("boardingPoints", boardingPoints);
+        model.addAttribute("droppingPoints", droppingPoints);
+        model.addAttribute("busId", busId);
+        model.addAttribute("passenger", retrievedPassenger);
+
+        return "passenger/selectPoints";
+    }
+
+
+    @GetMapping("/passengerPortal/booking/addPassengerDetails")
+    public String addPassengerDetailsForEachSeats(
+            @RequestParam("passengerId") Long passengerId,
+            @RequestParam("busId") Long busId,
+            @RequestParam("boardingPoint") String selectedBoardingPoint,
+            @RequestParam("droppingPoint") String selectedDroppingPoint,
+            @ModelAttribute("selectedSeats") List<String> selectedSeats,
+            Model model) {
+
+
+        // Retrieve seat data
+        List<SeatDto> seatsList = selectedSeats.stream()
+                .map(s -> seatService.getById(Long.parseLong(s)))
+                .toList();
+
+        // Retrieve bus operator details
+        BusOperatorDto busOperator = busOperatorService.getById(busId);
+
+        // Parse the base fares and insurance fee from BusOperator
+        double baseFareSeater = busOperator.getBaseFareSeaterType();
+        double baseFareSemiSleeper = busOperator.getBaseFareSemiSleeperType();
+        double baseFareSleeper = busOperator.getBaseFareSleeperType();
+        double insuranceFee = busOperator.getInsuranceFee();
+
+        // Calculate the total fare
+        double totalFare = 0.0;
+        for (SeatDto seat : seatsList) {
+            double seatFare = 0.0;
+            if ("standardSeater".equalsIgnoreCase(seat.getSeatType()) ) {
+                seatFare = baseFareSeater;
+            }
+            else if ("semiSleeper".equalsIgnoreCase(seat.getSeatType())) {
+                seatFare = baseFareSemiSleeper;
+            }
+            else if ("sleeper".equalsIgnoreCase(seat.getSeatType())) {
+                seatFare = baseFareSleeper;
+            }
+            // Add insurance fee to the seat fare
+            seatFare += insuranceFee;
+            totalFare += seatFare;
+        }
+
+        // Add the calculated amount to the model
+        model.addAttribute("amountToPay", totalFare);
+
+        String seatNumbers = seatsList.stream()
+                .map(SeatDto::getSeatNumber)
+                .collect(Collectors.joining(", "));
+
+
+        // Add attributes to the model
+        model.addAttribute("seatsData", seatsList);
+        model.addAttribute("seatNumbers", seatNumbers);
+
+        model.addAttribute("passenger", passengerService.getById(passengerId));
+        model.addAttribute("bus",busOperator );
+        model.addAttribute("boardingPoint", selectedBoardingPoint);
+        model.addAttribute("droppingPoint", selectedDroppingPoint);
+
+        return "booking/addPassengerForEachSeat";
+    }
+
+    @PostMapping("/passengerPortal/booking/savePassengerDetails")
+    public String savePassengerDetails(
+            @RequestParam("busId") Long busId,
+            @RequestParam("passengerId") Long passengerId,
+            @RequestParam("boardingPoint") String selectedBoardingPoint,
+            @RequestParam("droppingPoint") String selectedDroppingPoint,
+            @RequestParam("seatNumbers") List<String> seatIds,
+            @RequestParam("BookingFor") List<String> passengerNames,
+            @RequestParam("genders") List<String> genders,
+            @RequestParam("ages") List<Integer> ages,
+            @RequestParam("primaryMobile") Long contactNumber,
+            @RequestParam("secondaryMobile") Long secondaryNumber,
+            Model model) {
+
+        // Retrieve the bus and passenger details
+        PassengerDto passenger = passengerService.getById(passengerId);
+        BusOperatorDto busOperator = busOperatorService.getById(busId);
+
+        List<BookingDto> bookings = new ArrayList<>();
+        double totalFare = 0;
+        // Loop through the selected seats and create booking entries
+        for (int i = 0; i < seatIds.size(); i++) {
+            // Calculate the fare for the seat
+            double seatFare = 0;
+            SeatDto seat = seatService.getById(Long.parseLong(seatIds.get(i)));
+
+
+            if (seat.getSeatType().equals("standardSeater") ){
+                seatFare = busOperator.getBaseFareSeaterType().doubleValue();
+                System.out.println("\n\n\nCalculated value" + seatFare);
+                System.out.println("Seat Type: " + seat.getSeatType());
+                System.out.println("Base Fare for Seater: " + busOperator.getBaseFareSeaterType());
+            }
+            if (seat.getSeatType().equals("semiSleeper") ) {
+                seatFare = busOperator.getBaseFareSemiSleeperType().doubleValue();
+
+                System.out.println("\n\n\nCalculated value" + seatFare);
+                System.out.println("Base Fare for Semi-Sleeper: " + busOperator.getBaseFareSemiSleeperType());
+                System.out.println("Seat Type: " + seat.getSeatType());
+
+            }
+            if (seat.getSeatType().equals("sleeper") ) {
+
+
+                seatFare = busOperator.getBaseFareSleeperType().doubleValue();
+
+                System.out.println("\n\n\nCalculated value" + seatFare);
+                System.out.println("Seat Type: " + seat.getSeatType());
+                System.out.println("Base Fare for sleeper: " + busOperator.getBaseFareSleeperType());
+
+            }
+            // Add insurance fee
+            seatFare += busOperator.getInsuranceFee();
+            System.out.println("\n\n\n\nseat fare with insurance is : " + seatFare);
+
+            totalFare += seatFare;
+
+            LocalDate droppingDate = seat.getTripDate(); // Original trip date for boarding
+            LocalTime droppingTime = passengerService.extractTimeFromPoint(selectedDroppingPoint);
+            // When booking time is close to the end of day, need to update dropping date to the next date
+            if (droppingTime.isAfter(LocalTime.of(23, 59))) {
+                // Add 1 day to the trip date if the boarding time is after 23:59
+                droppingDate = droppingDate.plusDays(1);
+            }
+
+            // Create BookingDto for each seat
+            BookingDto booking = BookingDto.builder()
+                    .seatNumber(seat.getSeatNumber())
+                    .seatType(seat.getSeatType())
+                    .seatFare(seatFare)
+                    .passengerName(passengerNames.get(i))
+                    .age(ages.get(i))
+                    .gender(genders.get(i))
+                    .contactNumber(contactNumber)
+                    .secondaryNumber(secondaryNumber)
+                    .email(passenger.getEmail())
+                    .bookedDate(LocalDate.now())
+                    .bookedTime(LocalTime.now())
+                    .passengerBoardingPlace(selectedBoardingPoint)
+                    .passengerBoardingDate(seat.getTripDate()) // Adjust as needed
+                    .passengerBoardingTime(passengerService.extractTimeFromPoint(selectedBoardingPoint))
+                    .passengerDroppingPlace(selectedDroppingPoint)
+                    .passengerDroppingDate(droppingDate) // Adjust as needed
+                    .passengerDroppingTime(droppingTime)
+                    .busDepartureLocation(busOperator.getRoutes().get(0).getDeparturePlace())
+                    .busArrivalLocation(busOperator.getRoutes().get(0).getArrivalPlace())
+                    .passengerId(passengerId)
+                    .busId(busId)
+                    .seatId(seat.getId())
+                    .build();
+
+            bookings.add(booking);
+            System.out.println(" \n\n\nBooking " + i + ":\t" + booking);
+        }
+
+
+        // Save bookings in the database
+        bookingService.saveAll(bookings);
+
+        // Redirect to a success page or confirmation page
+        model.addAttribute("bookings", bookings);
+        model.addAttribute("totalFare", totalFare);
+        model.addAttribute("successMessage", "Your booking was successful!!! Please find your ticket details below...");
+        model.addAttribute("passenger",passenger);
+        model.addAttribute("bus",busOperator);
+
+        return "booking/confirmation";
+    }
+
+    @GetMapping("/passengerPortal/{id}/bookedTickets")
+    public String getBookedTickets(
+            @PathVariable Long id,
+            Model model
+    ) {
+        List<BookingDto> bookedTickets = bookingService.getBookedTicketsForPassenger(id);
+
+        List<GroupedBookingDto> groupedBookings = bookedTickets.stream()
+                .collect(Collectors.groupingBy(BookingDto::getPassengerBoardingDate))
+                .entrySet().stream()
+                .map(entry -> {
+                    List<BookingDto> bookings = entry.getValue();
+                    double totalFare = bookings.stream()
+                            .mapToDouble(BookingDto::getSeatFare)
+                            .sum();
+
+                    BookingDto firstBooking = bookings.get(0);
+                    BusOperatorDto busOperatorDto = busOperatorService.getById(firstBooking.getBusId());
+
+                    GroupedBookingDto dto = new GroupedBookingDto();
+                    dto.setBookingDate(entry.getKey());
+                    dto.setRoute(firstBooking.getBusDepartureLocation() + " to " + firstBooking.getBusArrivalLocation());
+                    dto.setBusOperatorName(busOperatorDto.getName());
+                    dto.setBusNumber(busOperatorDto.getRegisterNumber());
+                    dto.setDriverContact(busOperatorDto.getDriverMobile());
+                    dto.setBoardingPoint(firstBooking.getPassengerBoardingPlace());
+                    dto.setBoardingDate(firstBooking.getPassengerBoardingDate());
+                    dto.setBoardingTime(String.valueOf(firstBooking.getPassengerBoardingTime()));
+                    dto.setDroppingPoint(firstBooking.getPassengerDroppingPlace());
+                    dto.setDroppingDate(firstBooking.getPassengerDroppingDate());
+                    dto.setDroppingTime(String.valueOf(firstBooking.getPassengerDroppingTime()));
+                    dto.setBookings(bookings);
+                    dto.setTotalFare(totalFare);
+
+                    return dto;
+                })
+                .sorted(Comparator.comparing(GroupedBookingDto::getBookingDate).reversed())
+                .collect(Collectors.toList());
+
+        model.addAttribute("groupedBookings", groupedBookings);
+        model.addAttribute("passenger", passengerService.getById(id));
+
+        return "booking/bookedHistory";
+    }
+
 }

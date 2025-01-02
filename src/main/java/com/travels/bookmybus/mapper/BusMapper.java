@@ -74,8 +74,11 @@ public class BusMapper {
                 .allBusStops(busOperatorDto.getAllBusStops().stream().map(StopMapper::toMapEntity).toList())
                 .seatBookedStatus(busOperatorDto.getSeatBookedStatus().stream().map(BookingMapper::toMapEntity).toList())
 
-                .baseFare(Float.valueOf(busOperatorDto.getBaseFare()))
-                .insuranceFee(Float.valueOf(busOperatorDto.getInsuranceFee()))
+                .baseFareSeaterType(busOperatorDto.getBaseFareSeaterType())
+                .baseFareSemiSleeperType(busOperatorDto.getBaseFareSemiSleeperType())
+                .baseFareSleeperType(busOperatorDto.getBaseFareSleeperType())
+                .insuranceFee(busOperatorDto.getInsuranceFee())
+
                 .build();
     }
 
@@ -119,8 +122,11 @@ public class BusMapper {
                 .allBusStops(busOperator.getAllBusStops().stream().map(StopMapper::toMapDto).toList())
                 .seatBookedStatus(busOperator.getSeatBookedStatus().stream().map(BookingMapper::toMapDto).toList())
 
-                .baseFare(busOperator.getBaseFare().toString())
-                .insuranceFee(busOperator.getInsuranceFee().toString())
+                .baseFareSeaterType(busOperator.getBaseFareSeaterType())
+                .baseFareSemiSleeperType(busOperator.getBaseFareSemiSleeperType())
+                .baseFareSleeperType(busOperator.getBaseFareSleeperType())
+                .insuranceFee(busOperator.getInsuranceFee())
+
                 .build();
     }
 }

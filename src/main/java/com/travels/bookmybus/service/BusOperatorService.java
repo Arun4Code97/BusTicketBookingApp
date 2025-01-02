@@ -13,10 +13,8 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
-
-import static java.util.stream.Collectors.toList;
 
 @Service
 @RequiredArgsConstructor
@@ -57,24 +55,33 @@ public class BusOperatorService {
         String lowerLeftSeaterType = busOperator.getLowerLeftSeaterType();
         String lowerRightSeaterType = busOperator.getLowerRightSeaterType();
 
-        // Map seat numbers to SeatDto
-        List<Seat> seats = seatNumbers.stream()
-                .map(seatNumber -> {
-                    String seatType = determineSeatType(seatNumber, lowerLeftSeaterType, lowerRightSeaterType);
+        // Initialize a list to hold all seats (including copies for 10 days)
+        List<Seat> allSeats = new ArrayList<>();
 
-                    return Seat.builder()
-                            .seatNumber(seatNumber)
-                            .seatType(seatType)
-                            .isBooked(false) // Default to not booked
-                            .busOperator(busOperator)
-                            .build();
-                                    }
-                    )
-                .toList();
+        // For Faster response I have limited this to 30 days only, so that we could maintain seat status
+        for (int i = 0; i < 30; i++) {
+            LocalDate currentDate = LocalDate.now().plusDays(i);
+
+            List<Seat> seatsForFirstTenDays = seatNumbers.stream()
+                    .map(seatNumber -> {
+                        String seatType = determineSeatType(seatNumber, lowerLeftSeaterType, lowerRightSeaterType);
+
+                        return Seat.builder()
+                                .seatNumber(seatNumber)
+                                .seatType(seatType)
+                                .isBooked(false) // Default to not booked
+                                .tripDate(currentDate) // Assign the current date
+                                .busOperator(busOperator)
+                                .build();
+                    })
+                    .toList();
+
+            allSeats.addAll(seatsForFirstTenDays); // Add seats for this day to the final list
+        }
 
         // Save seats to BusOperator
         busOperator.getSeats().clear(); // Clear any existing seat data
-        busOperator.getSeats().addAll(seats);
+        busOperator.getSeats().addAll(allSeats);
 
         // Save to repository
         busRepository.save(busOperator);

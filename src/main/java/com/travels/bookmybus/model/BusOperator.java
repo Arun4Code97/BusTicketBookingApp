@@ -52,16 +52,6 @@ public class BusOperator {
 
     private Long upperTotalRowsCount;
 
-//    // Single/Double Seater configurations for each deck
-//    private String lowerSingleSeaterType;
-//    private Long lowerSingleSeaterCounts;
-//    private String lowerDoubleSeaterType;
-//    private Long lowerDoubleSeaterCounts;
-//
-//    private String upperSingleSeaterType;
-//    private Long upperSingleSeaterCounts;
-//    private String upperDoubleSeaterType;
-//    private Long upperDoubleSeaterCounts;
 
     // Rest stop details
     private Boolean hasRestStop;
@@ -86,7 +76,10 @@ public class BusOperator {
     private List<Booking> seatBookedStatus;
 
     // Fare details
-    private Float baseFare;
-    private Float insuranceFee = 10.0f; // Insurance fee, added optionally per ticket
+    private Double baseFareSeaterType;
+    private Double baseFareSemiSleeperType;
+    private Double baseFareSleeperType;
+    private Double insuranceFee;
+    // Insurance fee, added optionally per ticket
 
 }

@@ -30,7 +30,7 @@ public class BusOperatorController {
         BusOperatorDto busOperatorDto = new BusOperatorDto();
         model.addAttribute("busOperator", busOperatorDto);
         model.addAttribute("mode","add");
-        return "operator/operatorFormNew";
+        return "operator/operatorForm";
     }
     @PostMapping("/addBusOperator")
     public String toHandleAddBusOperator( @Valid @ModelAttribute("busOperator") BusOperatorDto busOperatorDto,
@@ -40,19 +40,16 @@ public class BusOperatorController {
         model.addAttribute("mode","add");
         //Handle Validation Error if exists
         if(result.hasErrors()){
-//            result.getAllErrors().forEach(error -> System.out.println(error + error.getDefaultMessage()));
-            return "operator/operatorFormNew";
+            return "operator/operatorForm";
         }
 
         //Handle Error if mail ID already exist
         if( busOperatorService.isExistByEmailId(busOperatorDto.getEmail()) ){
             model.addAttribute("errorExistEmail","Email ID already exist");
-            return "operator/operatorFormNew";
+            return "operator/operatorForm";
         }
 
         BusOperatorDto savedBusOperator = busOperatorService.saveBus(busOperatorDto);
-
-        System.out.println("saved bus operator\n\n\n" + savedBusOperator + "\n\n");
 
         return "redirect:/bookMyBus/addBusOperator/setPassword?savedBusOperatorId=" + savedBusOperator.getId();
     }
@@ -98,7 +95,7 @@ public class BusOperatorController {
 
         model.addAttribute("busOperator", retrievedBusOperator);
         model.addAttribute("mode","view");
-        return "operator/operatorFormNew";
+        return "operator/operatorForm";
     }
     @GetMapping("/busOperatorPortal/{id}/update" )
     public String toHandleBusOperatorPortalUpdateProfileRequest(@PathVariable("id") Long  busOperatorId,Model model){
@@ -107,7 +104,7 @@ public class BusOperatorController {
 
         model.addAttribute("busOperator", retrievedBusOperator);
         model.addAttribute("mode","update");
-        return "operator/operatorFormNew";
+        return "operator/operatorForm";
     }
     @PutMapping("/busOperatorPortal/{id}/update" )
     public String toHandleBusOperatorPortalUpdateProfilePostRequest( @Valid @ModelAttribute("busOperator") BusOperatorDto updateBusOperator,
@@ -115,7 +112,7 @@ public class BusOperatorController {
         model.addAttribute("mode","update");
 
         if(result.hasErrors()){
-            return "operator/operatorFormNew";
+            return "operator/operatorForm";
         }
         BusOperatorDto updatedBusOperator = busOperatorService.saveBus(updateBusOperator);
 
@@ -123,12 +120,13 @@ public class BusOperatorController {
         // For showing update notification and redirect to passenger Bus booking page
         model.addAttribute("updateSuccess", true);
 
-        return "operator/operatorFormNew";
+        return "operator/operatorForm";
     }
     @GetMapping("/busOperatorPortal/{id}/seatSetup" )
     public String toHandleBusOperatorPortalSeatSetupRequest(@PathVariable("id") Long  busOperatorId,Model model){
 
         BusOperatorDto retrievedBusOperator = busOperatorService.getById(busOperatorId);
+
         model.addAttribute("busOperator", retrievedBusOperator);
         model.addAttribute("mode","add");
         return "operator/seatSetup";
@@ -170,12 +168,10 @@ public class BusOperatorController {
         if (result.hasErrors()) {
             return "operator/routeSetup";
         }
-        System.out.println("\n\n\n\nIncoming busOperatorId is : \t\t" + busOperatorId);
-        // Save seat configuration
 
+        // Save seat configuration
         busOperatorService.saveRouteConfiguration(busOperatorId, routeDto);
 
-//        System.out.println("\n\n\n\nAfter saved :\n \t\t" + busOperatorService.saveRouteConfiguration(busOperatorId, routeDto));
         // Add success message
         redirectAttributes.addFlashAttribute("successMessage", "Route configuration saved successfully!");
         return "redirect:/bookMyBus/busOperatorPortal/" + busOperatorId;
@@ -219,16 +215,7 @@ public class BusOperatorController {
         redirectAttributes.addFlashAttribute("successMessage", "Stops saved successfully!");
         return "redirect:/bookMyBus/busOperatorPortal/" + busOperatorId;
     }
-//    @GetMapping("/seats/{busOperatorId}")
-//    public ResponseEntity<List<SeatDto>> getSeats(@PathVariable Long busOperatorId) {
-//        try {
-//            List<SeatDto> seats = seatService.getSeatsByBusOperator(busOperatorId);
-//            System.out.println("\n\n\nAJAX Call: \n" + seats);
-//            return ResponseEntity.ok(seats);
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-//        }
-//    }
+
 
 
 }

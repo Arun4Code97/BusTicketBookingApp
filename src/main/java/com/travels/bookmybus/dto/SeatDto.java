@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -16,5 +18,6 @@ public class SeatDto {
     private Long id;
     private String  seatNumber;
     private String seatType;
+    private LocalDate tripDate;
     private Boolean isBooked;
 }

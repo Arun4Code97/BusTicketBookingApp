@@ -9,6 +9,5 @@ import java.util.Optional;
 @Repository
 public interface BusRepository extends JpaRepository<BusOperator,Long> {
     Optional<BusOperator> findByEmail(String email);
-
     boolean existsByEmail(String email);
 }

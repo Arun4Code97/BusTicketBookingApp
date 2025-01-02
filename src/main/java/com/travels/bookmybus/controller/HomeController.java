@@ -61,7 +61,7 @@ public class HomeController {
         }
         return "utility/homePage";
     }
-//
+
 //    // Handle doctor login
     private String handleOperatorLogin(UserLoginDto userData, Model model) {
 

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,5 +30,20 @@ public class BookingService {
         if(receivedBookings.isEmpty())
             throw new NoSuchElementException("Bookings details are not added in the database");
         return receivedBookings.stream().map(BookingMapper::toMapDto).toList();
+    }
+
+    public List<Booking> saveAll(List<BookingDto> bookingDtos) {
+        List<Booking> bookings = bookingDtos.stream()
+                .map(BookingMapper::toMapEntity)
+                .collect(Collectors.toList());
+
+        return bookingRepository.saveAll(bookings);
+    }
+
+    public List<BookingDto> getBookedTicketsForPassenger(Long passengerId) {
+        return bookingRepository.findByPassengerIdOrderByPassengerBoardingDateDesc(passengerId)
+                .stream()
+                .map(BookingMapper::toMapDto)
+                .collect(Collectors.toList());
     }
 }

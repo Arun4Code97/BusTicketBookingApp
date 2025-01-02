@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
+
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
@@ -16,6 +18,7 @@ public class Seat {
     private Long id;
     private String  seatNumber;
     private String seatType;
+    private LocalDate tripDate;
     private Boolean isBooked;
     @ManyToOne
     @JoinColumn(name = "bus_operator_id")
