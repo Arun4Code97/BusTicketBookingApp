@@ -1,7 +1,7 @@
 **BookMyBus Application**
 <br>
 &nbsp;&nbsp;&nbsp;BookMyBus Application is a web-based bus ticket booking application designed to streamline the interaction between passengers and bus operators. 
-The system facilitates essential services such as passenger and bus operator registration, bus seats generation dynamically, Route and stop confguartion and user profile management.
+The system facilitates essential services such as passenger bus searching and booking, bus-operator registration, bus seats generation dynamically, Route and stop confguartion and user profile management.
 <br><br>
 **Key Features: -**
 <br>
