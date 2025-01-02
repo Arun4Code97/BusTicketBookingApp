@@ -29,7 +29,12 @@ The system facilitates essential services such as passenger bus searching and bo
             &nbsp;&nbsp; &nbsp;&nbsp;* Logout<br>
          <br>
 &nbsp;&nbsp;By providing these services in a single platform, helps bus operators to book tickets fastly through online web application, reduces administrative workload, and allows for a more seamless experience for both passengers and bus operators.         <br>  <br>
-&nbsp;&nbsp;Kindly refer the above attahced videos for setting up my project into local machine and to watch output recordings of my application.<br>
 
-
+&nbsp;&nbsp;Also click on the below attahced link to see an output video recordings of my application.<br>
+   <br>1. &nbsp;&nbsp; Overall Application working recordings -Part 1.
+   <br>
+https://drive.google.com/file/d/1AWCnKO1TTbWs4nYiYsnr3DQ63kamvYL_/view?usp=drive_link
+   <br>2. &nbsp;&nbsp; Booked seats status while booking new seats - Part 2
+      <br>
+      https://drive.google.com/file/d/1NjLcXm1fUi5LZSwBZFw9iM-PaZXkeLBG/view?usp=drive_link
       
