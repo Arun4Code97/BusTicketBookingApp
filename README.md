@@ -15,8 +15,8 @@ The system facilitates essential services such as passenger bus searching and bo
            &nbsp;&nbsp; &nbsp;&nbsp;* To Search Bus <br>
            &nbsp;&nbsp; &nbsp;&nbsp;* Available Bus in searched Route<br>
            &nbsp;&nbsp; &nbsp;&nbsp;* Seats status on selected date, allows unbooked tickets to book<br>
-           &nbsp;&nbsp; &nbsp;&nbsp;* Update profile<br>
             &nbsp;&nbsp; &nbsp;&nbsp;* Booked Tickets History<br>
+           &nbsp;&nbsp; &nbsp;&nbsp;* Update profile<br>
            &nbsp;&nbsp; &nbsp;&nbsp;* Logout<br>
          <br>
 **3.	Bus Operator Portal**<br>
