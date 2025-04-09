@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/bookMyBus")
+@RequestMapping(value = {"/","/bookMyBus"})
 public class HomeController {
     private final PassengerService passengerService;
     private final BusOperatorService busOperatorService;
